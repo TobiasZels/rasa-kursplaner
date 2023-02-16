@@ -1,0 +1,343 @@
+actions:
+- action_botfront_disambiguation
+- action_botfront_disambiguation_followup
+- action_botfront_fallback
+- action_botfront_mapping
+- action_change_schedule
+- action_check_chosen_courses
+- action_check_sws
+- action_connected_courses
+- action_fetch_course
+- action_fetch_course_list
+- action_fetch_information
+- action_fetch_next_course
+- action_fetch_semester_info
+- action_get_main_subject
+- action_get_schedule
+- action_max_semester_length
+- action_save_finished_courses
+- action_save_finished_modules
+- action_save_sws
+- action_sub_subject_needed
+- action_user_accepts_course
+- action_user_get_selected_course
+- action_user_rejects_course
+- action_user_takes_selected_course
+- action_validate_graduation
+- action_validate_semester
+- action_validate_sub_subject
+- utter_3_feMog05
+- utter_4dePD-ElM
+- utter_4ohRy_zhk
+- utter_51_-czhZb
+- utter_5UGDAG8u8
+- utter_5hAHa0Noq
+- utter_5rGohOzo9
+- utter_6HAmruRHs
+- utter_6mxZxOPLd
+- utter_7XhcKXSF7
+- utter_7kBbR08Ag
+- utter_9zifhXGx-
+- utter_C7eJIbjpl
+- utter_E2ghQCmcT
+- utter_F6Q338F7r
+- utter_G6swrLKUc
+- utter_HEDTrHi9F
+- utter_IUtuwD-nc
+- utter_Ls9WAmOAp
+- utter_NwQzWzUY4
+- utter_Q8lEXH-zy
+- utter_QKeRhNgJn
+- utter_SA6SdOWj3
+- utter_ToL9glevn
+- utter_WheS1zp0k
+- utter_fgU7NXPMv
+- utter_g7XN0wUx4
+- utter_iGrMkUei2
+- utter_l6cuNj0cu
+- utter_m7nsri1m8
+- utter_n9gJrlJ9T
+- utter_qV_oeo0Tm
+- utter_sPPI1like
+- utter_tq0yHA55x
+- utter_uPYFCM_9f
+- utter_xlnKyTbx_
+- utter_yIOwPqlnx
+- utter_zYxGXqTUD
+entities:
+- course
+- graduation
+- module
+- semester
+- subjects
+- sws
+forms: {}
+intents:
+- accept_course
+- confirm
+- get_started
+- needs_help
+- reject
+- select_course
+- select_fach
+- select_graduation
+- select_module
+- select_semester
+- select_sws
+- user_happy
+- user_unhappy
+- user_wants_schedule
+- wants_information
+responses:
+  utter_3_feMog05:
+  - text: Für das Modul {next_module} wird der Kurs {next_course},  {speciality_text}, angeboten. Geben sie an ob sie diesen Kurs belegen wollen oder stellen sie Fragen zu dem Kurs für weitere Informationen.
+  utter_4dePD-ElM:
+  - text: '{add_information}'
+  utter_4ohRy_zhk:
+  - text: Was ist ihr zweites Hauptfach/ ihre Nebenfächer?
+  utter_51_-czhZb:
+  - text: Sie befinden sich zurzeit im {semester_count}. Semester des {graduation} in {main_subject} mit {sub_subject}, ist das richtig?
+  utter_5UGDAG8u8:
+  - text: Bitte geben sie eine gültige Semesterzahl zwischen {min_semester} und {max_semester} ein.
+  utter_5hAHa0Noq:
+  - text: Ich hoffe ich konnte ihnen weiterhelfen, vergessen sie nicht ihre Kurse im Studienportal zu belegen.
+  utter_5rGohOzo9: 
+  - text: Der Kurs {next_course} konnte leider nicht gefunden werden.
+  utter_6HAmruRHs:
+  - text: Der angegebene Abschluss {graduation} in {main_subject} wird an der Universität leider nicht angeboten.
+  utter_6mxZxOPLd:
+  - text: Bis zu welchem Semester wollen Sie ihr Studium abschließen, empfohlen wird für {main_subject}  {min_semester} Semester mit einer maximalen Studiendauer von {max_semester} Semestern.
+  utter_7XhcKXSF7:
+  - text: Ihre bereits abgeschlossenen Module können sie unter (Flex-Now Link) einsehen.
+  utter_7kBbR08Ag:
+  - text: Wie viel Zeit möchten sie für ihr Studium dieses Semester aufbringen, um das Studium in der gewünschten Zeit abzuschließen werden {sws_empf} SWS empfohlen.
+  utter_9zifhXGx-:
+  - text: Haben sie Kurse aus noch nicht abgeschlossenen Modulen bereits besucht?
+  utter_C7eJIbjpl:
+  - text: 'Sind sie sicher das der Kurs {next_course} von ihrem Stundenplan entfernt werden soll? Bitte beachten sie: {warning}'
+  utter_E2ghQCmcT:
+  - text: Kurs gefunden
+  utter_F6Q338F7r:
+  - text: Für das Modul {next_module} wird der Kurs {next_course} angeboten. Geben sie an ob sie diesen Kurs belegen wollen oder stellen sie Fragen zu dem Kurs für weitere Informationen.
+  utter_G6swrLKUc:
+  - text: 'Für das Modul {next_module} werden die Kurse {next_course_list} angeboten. Wählen sie ob und welchen Kurs sie belegen wollen oder stellen sie Fragen zu den einzelnen Kursen für weitere Informationen. '
+  utter_HEDTrHi9F:
+  - text: Ihr gewähltes Fach wird an der Universität nicht als Hauptfach angeboten.
+  utter_IUtuwD-nc:
+  - text: Sie befinden sich zurzeit im 1. Semester des {graduation} in {main_subject} mit {sub_subject}, ist das richtig?
+  utter_Ls9WAmOAp:
+  - text: Für den Abschluss ihres Studiums benötigen sie zusätzlich nur noch {lp_left}, möchten sie einen weiteren Kurs belegen um diese lp zu erreichen?
+  utter_NwQzWzUY4:
+  - text: Ihren Stundenplan können sie unter {schedule_link} einsehen.
+  utter_Q8lEXH-zy:
+  - text: Welche Module haben sie bisher Abgeschlossen?
+  utter_QKeRhNgJn:
+  - text: Willkommen beim Kursplaner, im nachfolgenden werde ich sie bei der Auswahl ihrer Kurse für das nachfolgende Semester unterstützen.
+  utter_SA6SdOWj3:
+  - text: 'Geben sie an welcher Kurs aus ihrem Stundenplan gelöscht werden soll oder nennen sie einen Kurs um diesen hinzuzufügen. '
+  utter_ToL9glevn:
+  - text: Der Kurs {next_course} wurde dem Stundenplan hinzugefügt.
+  utter_WheS1zp0k:
+  - text: Studieren sie {main_subject} im Bachelor oder Master Studiengang?
+  utter_fgU7NXPMv:
+  - text: Welches Fach studieren sie aktuell als Hauptfach?
+  utter_g7XN0wUx4:
+  - text: 'Die ausgewählte Fächerkombination {main_subject} mit {sub_subject} ist leider nicht möglich. '
+  utter_iGrMkUei2:
+  - text: Für welches Semester möchten sie einen Stundenplan erstellen?
+  utter_l6cuNj0cu:
+  - text: Kurs {next_course} wurde dem Stundenplan hinzugefügt.
+  utter_m7nsri1m8:
+  - text: Es konnten keine weiteren Kurse gefunden werde. Wollen sie ihre Suchkriterien ändern?
+  utter_n9gJrlJ9T:
+  - text: Der Kurs {next_course} konnte leider nicht gefunden werden.
+  utter_qV_oeo0Tm:
+  - text: Ich hoffe ich konnte ihnen weiterhelfen, vergessen sie nicht ihre Kurse im Studienportal zu belegen.
+  utter_sPPI1like:
+  - text: Ihre Filterkriterien konnten leider keine Kurse finden. Bitte ändern sie diese.
+  utter_tq0yHA55x:
+  - text: Der angegebene Kurs existiert nicht.
+  utter_uPYFCM_9f:
+  - text: Bitte warten sie während ich für Sie nach Kursen suche...
+  utter_xlnKyTbx_:
+  - text: Haben sie Kurse aus noch nicht abgeschlossenen Modulen bereits besucht?
+  utter_yIOwPqlnx:
+  - text: Ihren Stundenplan können sie unter {schedule_link} einsehen. Möchten sie den Stundenplan übernehmen oder möchten sie Änderungen an diesem Vornehmen?
+  utter_zYxGXqTUD:
+  - text: Platzhalter für Informationen
+session_config: {}
+slots:
+  add_information:
+    initial_value: None
+    type: text
+    mappings:
+    - type: custom
+  add_information_exists:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  connected_courses_exist:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  course_delete:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  course_exists:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  course_list_empty:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  courses_selected:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  graduation:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: graduation
+  graduation_set:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  main_set:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  main_subject:
+    initial_value: None
+    type: text
+    mappings:
+    - type: custom
+  max_semester:
+    initial_value: '0'
+    type: text
+    mappings:
+    - type: custom
+  min_semester:
+    initial_value: '0'
+    type: text
+    mappings:
+    - type: custom
+  module:
+    type: list
+    mappings:
+    - type: from_entity
+      entity: module
+  modules:
+    type: list
+    mappings:
+    - type: custom
+  more_graduations:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  multiple_courses:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  near_max_lp:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  next_course:
+    initial_value: None
+    type: text
+    mappings:
+    - type: custom
+  next_course_list:
+    type: list
+    mappings:
+    - type: custom
+  next_module:
+    initial_value: None
+    type: text
+    mappings:
+    - type: custom
+  schedule_link:
+    initial_value: None
+    type: text
+    mappings:
+    - type: custom
+  semester:
+    initial_value: None
+    type: text
+    mappings:
+    - type: from_entity
+      entity: semester
+  semester_count:
+    initial_value: '0'
+    type: text
+    mappings:
+    - type: custom
+  semester_set:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  speciality_bool:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  speciality_text:
+    initial_value: None
+    type: text
+    mappings:
+    - type: custom
+  sub_set:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  sub_subject:
+    initial_value: None
+    type: text
+    mappings:
+    - type: custom
+  sub_subject_needed:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  subjects:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: subjects
+  sws:
+    type: text
+    mappings:
+    - type: from_entity
+      entity: sws
+  sws_empf:
+    initial_value: '0'
+    type: text
+    mappings:
+    - type: custom
+  sws_full:
+    initial_value: true
+    type: bool
+    mappings:
+    - type: custom
+  warning:
+    initial_value: None
+    type: text
+    mappings:
+    - type: custom

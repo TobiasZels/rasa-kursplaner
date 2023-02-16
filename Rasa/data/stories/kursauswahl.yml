@@ -1,0 +1,440 @@
+stories:
+  - story: Besonderheiten Dialog
+    steps:
+      - checkpoint: link-to-Besonderheiten Dialog/b90cf0c9-7dd0-4e93-9886-58dff04fe68a
+      - action: utter_E2ghQCmcT
+      - checkpoint: Besonderheiten_Dialog__branches
+    metadata:
+      group: Kursauswahl
+  - story: Besonderheiten Dialog__No Speciality
+    steps:
+      - checkpoint: Besonderheiten_Dialog__branches
+      - slot_was_set:
+          - speciality_bool: false
+      - action: utter_F6Q338F7r
+      - checkpoint: Besonderheiten_Dialog__No_Speciality__branches
+    metadata:
+      group: Kursauswahl
+  - story: Besonderheiten Dialog__No Speciality__information
+    steps:
+      - checkpoint: Besonderheiten_Dialog__No_Speciality__branches
+      - intent: wants_information
+        user: Ich möchte weiter Informationen einsehen
+        entities: []
+      - checkpoint: link-to-Informations Dialog/fe9dcfd6-ebe0-4d84-bc05-9f7852484c23
+    metadata:
+      group: Kursauswahl
+  - story: Besonderheiten Dialog__No Speciality__no information
+    steps:
+      - checkpoint: Besonderheiten_Dialog__No_Speciality__branches
+      - intent: accept_course
+        user: Ich nehme den Kurs
+        entities: []
+      - checkpoint: link-to-Kurs hinzugefügt/3c30b9fe-e59b-4a7c-ab76-30e1b0ab2521
+    metadata:
+      group: Kursauswahl
+  - story: Besonderheiten Dialog__Speciality
+    steps:
+      - checkpoint: Besonderheiten_Dialog__branches
+      - slot_was_set:
+          - speciality_bool: true
+      - action: utter_3_feMog05
+      - checkpoint: Besonderheiten_Dialog__Speciality__branches
+    metadata:
+      group: Kursauswahl
+  - story: Besonderheiten Dialog__Speciality__deny
+    steps:
+      - checkpoint: Besonderheiten_Dialog__Speciality__branches
+      - intent: reject
+        user: Ich will einen anderen Kurs
+        entities: []
+      - action: action_user_rejects_course
+      - checkpoint: link-to-Kurs Vorschlag/3643ffb9-c81a-4546-878c-2318f58b0981
+    metadata:
+      group: Kursauswahl
+  - story: Besonderheiten Dialog__Speciality__information
+    steps:
+      - checkpoint: Besonderheiten_Dialog__Speciality__branches
+      - intent: wants_information
+        user: Ich möchte Informationen zu dem Kurs haben
+        entities: []
+      - checkpoint: link-to-Informations Dialog/fe9dcfd6-ebe0-4d84-bc05-9f7852484c23
+    metadata:
+      group: Kursauswahl
+  - story: Besonderheiten Dialog__Speciality__no information
+    steps:
+      - checkpoint: Besonderheiten_Dialog__Speciality__branches
+      - intent: accept_course
+        user: Ich möchte den Kurs annehmen
+        entities: []
+      - action: action_user_accepts_course
+      - checkpoint: link-to-Kurs hinzugefügt/3c30b9fe-e59b-4a7c-ab76-30e1b0ab2521
+    metadata:
+      group: Kursauswahl
+  - story: Informations Dialog
+    steps:
+      - checkpoint: link-to-Informations Dialog/fe9dcfd6-ebe0-4d84-bc05-9f7852484c23
+      - action: utter_zYxGXqTUD
+      - checkpoint: Informations_Dialog__branches
+    metadata:
+      group: Kursauswahl
+  - story: Informations Dialog__mehrere Kurse
+    steps:
+      - checkpoint: Informations_Dialog__branches
+      - slot_was_set:
+          - multiple_courses: true
+      - checkpoint: link-to-Mehrere Kurse/17b731da-5701-49af-a5ad-a7803a33647d
+    metadata:
+      group: Kursauswahl
+  - story: Informations Dialog__single Kurs
+    steps:
+      - checkpoint: Informations_Dialog__branches
+      - slot_was_set:
+          - multiple_courses: false
+      - checkpoint: link-to-Besonderheiten Dialog/b90cf0c9-7dd0-4e93-9886-58dff04fe68a
+    metadata:
+      group: Kursauswahl
+  - story: Kurs hinzugefügt
+    steps:
+      - checkpoint: link-to-Kurs hinzugefügt/3c30b9fe-e59b-4a7c-ab76-30e1b0ab2521
+      - action: action_connected_courses
+      - checkpoint: Kurs_hinzugefügt__branches
+    metadata:
+      group: Kursauswahl
+  - story: Kurs hinzugefügt__conn
+    steps:
+      - checkpoint: Kurs_hinzugefügt__branches
+      - slot_was_set:
+          - connected_courses_exist: true
+      - checkpoint: link-to-Besonderheiten Dialog/b90cf0c9-7dd0-4e93-9886-58dff04fe68a
+    metadata:
+      group: Kursauswahl
+  - story: Kurs hinzugefügt__no conn
+    steps:
+      - checkpoint: Kurs_hinzugefügt__branches
+      - slot_was_set:
+          - connected_courses_exist: false
+      - action: action_check_sws
+      - checkpoint: Kurs_hinzugefügt__no_conn__branches
+    metadata:
+      group: Kursauswahl
+  - story: Kurs hinzugefügt__no conn__sws done
+    steps:
+      - checkpoint: Kurs_hinzugefügt__no_conn__branches
+      - slot_was_set:
+          - sws_full: true
+      - checkpoint: Kurs_hinzugefügt__no_conn__sws_done__branches
+    metadata:
+      group: Kursauswahl
+  - story: Kurs hinzugefügt__no conn__sws done__lp done
+    steps:
+      - checkpoint: Kurs_hinzugefügt__no_conn__sws_done__branches
+      - slot_was_set:
+          - near_max_lp: true
+      - action: utter_Ls9WAmOAp
+      - checkpoint: Kurs_hinzugefügt__no_conn__sws_done__lp_done__branches
+    metadata:
+      group: Kursauswahl
+  - story: Kurs hinzugefügt__no conn__sws done__lp done__accept
+    steps:
+      - checkpoint: Kurs_hinzugefügt__no_conn__sws_done__lp_done__branches
+      - intent: confirm
+        user: Ja
+        entities: []
+      - checkpoint: link-to-Kurs Vorschlag/3643ffb9-c81a-4546-878c-2318f58b0981
+    metadata:
+      group: Kursauswahl
+  - story: Kurs hinzugefügt__no conn__sws done__lp done__deny
+    steps:
+      - checkpoint: Kurs_hinzugefügt__no_conn__sws_done__lp_done__branches
+      - intent: reject
+        user: Nein
+        entities: []
+      - checkpoint: link-to-Stundenplan ausgeben/86b72475-5a17-4c07-aefd-9b0e4fefd3d3
+    metadata:
+      group: Kursauswahl
+  - story: Kurs hinzugefügt__no conn__sws done__lp not done
+    steps:
+      - checkpoint: Kurs_hinzugefügt__no_conn__sws_done__branches
+      - slot_was_set:
+          - near_max_lp: false
+      - checkpoint: link-to-Stundenplan ausgeben/86b72475-5a17-4c07-aefd-9b0e4fefd3d3
+    metadata:
+      group: Kursauswahl
+  - story: Kurs hinzugefügt__no conn__sws not done
+    steps:
+      - checkpoint: Kurs_hinzugefügt__no_conn__branches
+      - slot_was_set:
+          - sws_full: false
+      - checkpoint: link-to-Kurs Vorschlag/3643ffb9-c81a-4546-878c-2318f58b0981
+    metadata:
+      group: Kursauswahl
+  - story: Kurs Vorschlag
+    steps:
+      - checkpoint: link-to-Kurs Vorschlag/3643ffb9-c81a-4546-878c-2318f58b0981
+      - action: action_fetch_next_course
+      - checkpoint: Kurs_Vorschlag__branches
+    metadata:
+      group: Kursauswahl
+  - story: Kurs Vorschlag__More Courses Found
+    steps:
+      - checkpoint: Kurs_Vorschlag__branches
+      - slot_was_set:
+          - course_list_empty: false
+      - checkpoint: Kurs_Vorschlag__More_Courses_Found__branches
+    metadata:
+      group: Kursauswahl
+  - story: Kurs Vorschlag__More Courses Found__Multiple Courses
+    steps:
+      - checkpoint: Kurs_Vorschlag__More_Courses_Found__branches
+      - slot_was_set:
+          - multiple_courses: true
+      - action: action_fetch_course_list
+      - checkpoint: link-to-Mehrere Kurse/17b731da-5701-49af-a5ad-a7803a33647d
+    metadata:
+      group: Kursauswahl
+  - story: Kurs Vorschlag__More Courses Found__Single Course
+    steps:
+      - checkpoint: Kurs_Vorschlag__More_Courses_Found__branches
+      - slot_was_set:
+          - multiple_courses: false
+      - action: action_fetch_course
+      - checkpoint: link-to-Besonderheiten Dialog/b90cf0c9-7dd0-4e93-9886-58dff04fe68a
+    metadata:
+      group: Kursauswahl
+  - story: Kurs Vorschlag__No more Courses Found
+    steps:
+      - checkpoint: Kurs_Vorschlag__branches
+      - slot_was_set:
+          - course_list_empty: true
+      - action: action_check_chosen_courses
+      - checkpoint: Kurs_Vorschlag__No_more_Courses_Found__branches
+    metadata:
+      group: Kursauswahl
+  - story: Kurs Vorschlag__No more Courses Found__Courses Selected
+    steps:
+      - checkpoint: Kurs_Vorschlag__No_more_Courses_Found__branches
+      - slot_was_set:
+          - courses_selected: true
+      - action: utter_m7nsri1m8
+      - checkpoint: Kurs_Vorschlag__No_more_Courses_Found__Courses_Selected__branches
+    metadata:
+      group: Kursauswahl
+  - story: >-
+      Kurs Vorschlag__No more Courses Found__Courses Selected__NuNeinzer will
+      Kriterien nicht ändern
+    steps:
+      - checkpoint: Kurs_Vorschlag__No_more_Courses_Found__Courses_Selected__branches
+      - intent: reject
+        user: Nein ich will die Kriterien nicht ändern
+        entities: []
+      - checkpoint: link-to-Stundenplan ausgeben/86b72475-5a17-4c07-aefd-9b0e4fefd3d3
+    metadata:
+      group: Kursauswahl
+  - story: >-
+      Kurs Vorschlag__No more Courses Found__Courses Selected__Nutzer will
+      Kriterien ändern
+    steps:
+      - checkpoint: Kurs_Vorschlag__No_more_Courses_Found__Courses_Selected__branches
+      - intent: confirm
+        user: 'Ja, ich will die Kriterien ändern'
+        entities: []
+      - checkpoint: link-to-Studiendauer/df9658ae-010d-4a63-b82b-16e1c663abd8
+    metadata:
+      group: Kursauswahl
+  - story: Kurs Vorschlag__No more Courses Found__No Courses Selected
+    steps:
+      - checkpoint: Kurs_Vorschlag__No_more_Courses_Found__branches
+      - slot_was_set:
+          - courses_selected: false
+      - action: utter_sPPI1like
+      - checkpoint: link-to-Studiendauer/df9658ae-010d-4a63-b82b-16e1c663abd8
+    metadata:
+      group: Kursauswahl
+  - story: Mehrere Kurse
+    steps:
+      - checkpoint: link-to-Mehrere Kurse/17b731da-5701-49af-a5ad-a7803a33647d
+      - action: utter_G6swrLKUc
+      - checkpoint: Mehrere_Kurse__branches
+    metadata:
+      group: Kursauswahl
+  - story: Mehrere Kurse__deny
+    steps:
+      - checkpoint: Mehrere_Kurse__branches
+      - intent: reject
+        user: Ich möchte keine Kurse
+        entities: []
+      - action: action_user_rejects_course
+      - checkpoint: link-to-Kurs Vorschlag/3643ffb9-c81a-4546-878c-2318f58b0981
+    metadata:
+      group: Kursauswahl
+  - story: Mehrere Kurse__information
+    steps:
+      - checkpoint: Mehrere_Kurse__branches
+      - intent: wants_information
+        user: ich möchte Informationen zu Kurs BA-PI-01 einsehen
+        entities:
+          - course: BA-PI-01
+      - action: action_user_get_selected_course
+      - checkpoint: Mehrere_Kurse__information__branches
+    metadata:
+      group: Kursauswahl
+  - story: Mehrere Kurse__information__doesnt exist
+    steps:
+      - checkpoint: Mehrere_Kurse__information__branches
+      - slot_was_set:
+          - course_exists: false
+      - action: utter_5rGohOzo9
+      - checkpoint: link-to-Mehrere Kurse/17b731da-5701-49af-a5ad-a7803a33647d
+    metadata:
+      group: Kursauswahl
+  - story: Mehrere Kurse__information__exists
+    steps:
+      - checkpoint: Mehrere_Kurse__information__branches
+      - slot_was_set:
+          - course_exists: true
+      - checkpoint: link-to-Informations Dialog/fe9dcfd6-ebe0-4d84-bc05-9f7852484c23
+    metadata:
+      group: Kursauswahl
+  - story: Mehrere Kurse__no information
+    steps:
+      - checkpoint: Mehrere_Kurse__branches
+      - intent: accept_course
+        user: Ich möchte PI-BA-02 belgen
+        entities:
+          - course: PI-BA-02
+      - action: action_user_takes_selected_course
+      - checkpoint: Mehrere_Kurse__no_information__branches
+    metadata:
+      group: Kursauswahl
+  - story: Mehrere Kurse__no information__course doesnt exist
+    steps:
+      - checkpoint: Mehrere_Kurse__no_information__branches
+      - slot_was_set:
+          - course_exists: false
+      - action: utter_n9gJrlJ9T
+      - checkpoint: link-to-Mehrere Kurse/17b731da-5701-49af-a5ad-a7803a33647d
+    metadata:
+      group: Kursauswahl
+  - story: Mehrere Kurse__no information__course exists
+    steps:
+      - checkpoint: Mehrere_Kurse__no_information__branches
+      - slot_was_set:
+          - course_exists: true
+      - action: utter_l6cuNj0cu
+      - checkpoint: link-to-Kurs hinzugefügt/3c30b9fe-e59b-4a7c-ab76-30e1b0ab2521
+    metadata:
+      group: Kursauswahl
+  - story: Stundenplan ausgeben
+    steps:
+      - checkpoint: link-to-Stundenplan ausgeben/86b72475-5a17-4c07-aefd-9b0e4fefd3d3
+      - action: action_get_schedule
+      - action: utter_yIOwPqlnx
+      - checkpoint: Stundenplan_ausgeben__branches
+    metadata:
+      group: Kursauswahl
+  - story: Stundenplan ausgeben__happy
+    steps:
+      - checkpoint: Stundenplan_ausgeben__branches
+      - intent: user_happy
+        user: Ich möchte den Stundenplan übernehmen
+        entities: []
+      - checkpoint: link-to-Verabschieden/fcf9585d-9d11-4322-9ef0-ea7f84fc7525
+    metadata:
+      group: Kursauswahl
+  - story: Stundenplan ausgeben__sad
+    steps:
+      - checkpoint: Stundenplan_ausgeben__branches
+      - intent: user_unhappy
+        user: Ich will Änderungen vornehmen
+        entities: []
+      - action: utter_SA6SdOWj3
+      - intent: select_course
+        user: Ich möchte Kurs MMI entfernen
+        entities:
+          - course: MMI
+      - action: action_change_schedule
+      - checkpoint: Stundenplan_ausgeben__sad__branches
+    metadata:
+      group: Kursauswahl
+  - story: Stundenplan ausgeben__sad__add
+    steps:
+      - checkpoint: Stundenplan_ausgeben__sad__branches
+      - slot_was_set:
+          - course_delete: false
+          - course_exists: true
+      - action: utter_ToL9glevn
+      - checkpoint: link-to-Stundenplan ausgeben/86b72475-5a17-4c07-aefd-9b0e4fefd3d3
+    metadata:
+      group: Kursauswahl
+  - story: Stundenplan ausgeben__sad__delete
+    steps:
+      - checkpoint: Stundenplan_ausgeben__sad__branches
+      - slot_was_set:
+          - course_delete: false
+          - course_exists: true
+      - action: utter_C7eJIbjpl
+      - checkpoint: Stundenplan_ausgeben__sad__delete__branches
+    metadata:
+      group: Kursauswahl
+  - story: Stundenplan ausgeben__sad__delete__accept
+    steps:
+      - checkpoint: Stundenplan_ausgeben__sad__delete__branches
+      - intent: confirm
+        user: Ja
+        entities: []
+      - checkpoint: link-to-Kurs Vorschlag/3643ffb9-c81a-4546-878c-2318f58b0981
+    metadata:
+      group: Kursauswahl
+  - story: Stundenplan ausgeben__sad__delete__deny
+    steps:
+      - checkpoint: Stundenplan_ausgeben__sad__delete__branches
+      - intent: reject
+        user: Nein
+        entities: []
+      - checkpoint: link-to-Stundenplan ausgeben/86b72475-5a17-4c07-aefd-9b0e4fefd3d3
+    metadata:
+      group: Kursauswahl
+  - story: Stundenplan ausgeben__sad__not existing
+    steps:
+      - checkpoint: Stundenplan_ausgeben__sad__branches
+      - slot_was_set:
+          - course_exists: false
+      - action: utter_tq0yHA55x
+      - checkpoint: link-to-Stundenplan ausgeben/86b72475-5a17-4c07-aefd-9b0e4fefd3d3
+    metadata:
+      group: Kursauswahl
+  - story: Verabschieden
+    steps:
+      - checkpoint: link-to-Verabschieden/fcf9585d-9d11-4322-9ef0-ea7f84fc7525
+      - action: action_fetch_information
+      - checkpoint: Verabschieden__branches
+    metadata:
+      group: Kursauswahl
+  - story: Verabschieden__info
+    steps:
+      - checkpoint: Verabschieden__branches
+      - slot_was_set:
+          - add_information_exists: true
+      - action: utter_4dePD-ElM
+      - action: utter_qV_oeo0Tm
+    metadata:
+      group: Kursauswahl
+  - story: Verabschieden__no info
+    steps:
+      - checkpoint: Verabschieden__branches
+      - slot_was_set:
+          - add_information_exists: false
+      - action: utter_5hAHa0Noq
+    metadata:
+      group: Kursauswahl
+rules:
+  - rule: Stundenplan
+    condition: []
+    steps:
+      - intent: user_wants_schedule
+        user: Ich möchte meinen Stundenplan einsehen
+        entities: []
+      - action: utter_NwQzWzUY4
+    metadata:
+      group: Kursauswahl

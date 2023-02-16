@@ -1,0 +1,305 @@
+stories:
+  - story: Abgeschlossene Module
+    steps:
+      - checkpoint: link-to-Abgeschlossene Module/b5679187-d6f2-428d-8559-05036feb3baf
+      - action: utter_Q8lEXH-zy
+      - checkpoint: Abgeschlossene_Module__branches
+    metadata:
+      group: Datenerhebung
+  - story: Abgeschlossene Module__informationsmangel
+    steps:
+      - checkpoint: Abgeschlossene_Module__branches
+      - intent: needs_help
+        user: Keine ahnung
+        entities: []
+      - action: utter_7XhcKXSF7
+      - checkpoint: link-to-Abgeschlossene Module/b5679187-d6f2-428d-8559-05036feb3baf
+    metadata:
+      group: Datenerhebung
+  - story: Abgeschlossene Module__Module
+    steps:
+      - checkpoint: Abgeschlossene_Module__branches
+      - intent: select_module
+        user: Ich habe A3-B2-12 abgeschlossen
+        entities:
+          - module: A3-B2-12
+      - action: action_save_finished_modules
+      - action: utter_xlnKyTbx_
+      - checkpoint: Abgeschlossene_Module__Module__branches
+    metadata:
+      group: Datenerhebung
+  - story: Abgeschlossene Module__Module__Abgschlossene Module
+    steps:
+      - checkpoint: Abgeschlossene_Module__Module__branches
+      - intent: select_course
+        user: 'Ja, ich habe MMI besucht'
+        entities:
+          - course: MMI
+      - action: action_save_finished_courses
+      - checkpoint: link-to-Studiendauer/df9658ae-010d-4a63-b82b-16e1c663abd8
+    metadata:
+      group: Datenerhebung
+  - story: Abgeschlossene Module__Module__Keine abgeschlossenen Module
+    steps:
+      - checkpoint: Abgeschlossene_Module__Module__branches
+      - intent: reject
+        user: Nein
+        entities: []
+      - checkpoint: link-to-Studiendauer/df9658ae-010d-4a63-b82b-16e1c663abd8
+    metadata:
+      group: Datenerhebung
+  - story: Abschluss
+    steps:
+      - checkpoint: link-to-Abschluss/c2614655-ce25-41fb-acb5-024d8ef9f6a7
+      - action: utter_WheS1zp0k
+      - intent: select_graduation
+        user: Ich mache den Bachelor
+        entities:
+          - graduation: Bachelor
+      - action: action_validate_graduation
+      - checkpoint: Abschluss__branches
+    metadata:
+      group: Datenerhebung
+  - story: Abschluss__Abschluss angeboten
+    steps:
+      - checkpoint: Abschluss__branches
+      - slot_was_set:
+          - graduation_set: true
+      - checkpoint: link-to-Nebenfächer/3d293bf8-8586-4599-a62b-08b349af162e
+    metadata:
+      group: Datenerhebung
+  - story: Abschluss__Abschluss nicht angeboten
+    steps:
+      - checkpoint: Abschluss__branches
+      - slot_was_set:
+          - graduation_set: false
+      - action: utter_6HAmruRHs
+      - checkpoint: link-to-Hauptfach/c034d5b5-e6b5-4f1b-accb-b59a873e4f2c
+    metadata:
+      group: Datenerhebung
+  - story: Hauptfach
+    steps:
+      - checkpoint: link-to-Hauptfach/c034d5b5-e6b5-4f1b-accb-b59a873e4f2c
+      - action: utter_fgU7NXPMv
+      - intent: select_fach
+        user: Ich studiere Medieninformatik
+        entities:
+          - subjects: Medieninformatik
+      - action: action_get_main_subject
+      - checkpoint: Hauptfach__branches
+    metadata:
+      group: Datenerhebung
+  - story: Hauptfach__Hauptfach
+    steps:
+      - checkpoint: Hauptfach__branches
+      - slot_was_set:
+          - main_set: true
+      - checkpoint: Hauptfach__Hauptfach__branches
+    metadata:
+      group: Datenerhebung
+  - story: Hauptfach__Hauptfach__Mehrere Abschlüsse
+    steps:
+      - checkpoint: Hauptfach__Hauptfach__branches
+      - slot_was_set:
+          - more_graduations: true
+      - checkpoint: link-to-Abschluss/c2614655-ce25-41fb-acb5-024d8ef9f6a7
+    metadata:
+      group: Datenerhebung
+  - story: Hauptfach__Hauptfach__Nur einen Abschluss
+    steps:
+      - checkpoint: Hauptfach__Hauptfach__branches
+      - slot_was_set:
+          - more_graduations: false
+      - checkpoint: link-to-Nebenfächer/3d293bf8-8586-4599-a62b-08b349af162e
+    metadata:
+      group: Datenerhebung
+  - story: Hauptfach__kein Hauptfach
+    steps:
+      - checkpoint: Hauptfach__branches
+      - slot_was_set:
+          - main_set: false
+          - main_set: null
+      - action: utter_HEDTrHi9F
+      - checkpoint: link-to-Hauptfach/c034d5b5-e6b5-4f1b-accb-b59a873e4f2c
+    metadata:
+      group: Datenerhebung
+  - story: Introduction
+    steps:
+      - intent: get_started
+        entities: []
+      - checkpoint: Introduction__branches
+    metadata:
+      group: Datenerhebung
+  - story: Introduction__New Branch 1
+    steps:
+      - checkpoint: Introduction__branches
+      - slot_was_set:
+          - graduation: null
+      - action: utter_QKeRhNgJn
+      - checkpoint: link-to-Hauptfach/c034d5b5-e6b5-4f1b-accb-b59a873e4f2c
+    metadata:
+      group: Datenerhebung
+  - story: Introduction__New Branch 2
+    steps:
+      - checkpoint: Introduction__branches
+      - slot_was_set:
+          - graduation: set
+      - checkpoint: link-to-Hauptfach/c034d5b5-e6b5-4f1b-accb-b59a873e4f2c
+    metadata:
+      group: Datenerhebung
+  - story: Nebenfächer
+    steps:
+      - checkpoint: link-to-Nebenfächer/3d293bf8-8586-4599-a62b-08b349af162e
+      - action: action_sub_subject_needed
+      - checkpoint: Nebenfächer__branches
+    metadata:
+      group: Datenerhebung
+  - story: Nebenfächer__Kein Nebenfach benötigt
+    steps:
+      - checkpoint: Nebenfächer__branches
+      - slot_was_set:
+          - sub_subject_needed: false
+      - checkpoint: link-to-Semester/360076da-346e-4907-9a4c-d70fc7cff799
+    metadata:
+      group: Datenerhebung
+  - story: Nebenfächer__Nebenfach benötigt
+    steps:
+      - checkpoint: Nebenfächer__branches
+      - slot_was_set:
+          - sub_subject_needed: true
+      - action: utter_4ohRy_zhk
+      - intent: select_fach
+        user: Mein zweites Hauptfach ist Informationswissenschaft
+        entities:
+          - subjects: Informationswissenschaft
+      - action: action_validate_sub_subject
+      - checkpoint: Nebenfächer__Nebenfach_benötigt__branches
+    metadata:
+      group: Datenerhebung
+  - story: Nebenfächer__Nebenfach benötigt__Fächerkombination möglich
+    steps:
+      - checkpoint: Nebenfächer__Nebenfach_benötigt__branches
+      - slot_was_set:
+          - sub_set: true
+      - checkpoint: link-to-Semester/360076da-346e-4907-9a4c-d70fc7cff799
+    metadata:
+      group: Datenerhebung
+  - story: Nebenfächer__Nebenfach benötigt__Fächerkombination nicht möglich
+    steps:
+      - checkpoint: Nebenfächer__Nebenfach_benötigt__branches
+      - slot_was_set:
+          - sub_set: false
+      - action: utter_g7XN0wUx4
+      - checkpoint: link-to-Hauptfach/c034d5b5-e6b5-4f1b-accb-b59a873e4f2c
+    metadata:
+      group: Datenerhebung
+  - story: Semester
+    steps:
+      - checkpoint: link-to-Semester/360076da-346e-4907-9a4c-d70fc7cff799
+      - action: utter_iGrMkUei2
+      - intent: select_semester
+        user: 3. Semester
+        entities:
+          - semester: '3'
+      - action: action_validate_semester
+      - checkpoint: Semester__branches
+    metadata:
+      group: Datenerhebung
+  - story: Semester__Erstsemester
+    steps:
+      - checkpoint: Semester__branches
+      - slot_was_set:
+          - semester_set: false
+      - action: utter_IUtuwD-nc
+      - checkpoint: Semester__Erstsemester__branches
+    metadata:
+      group: Datenerhebung
+  - story: Semester__Erstsemester__falsch
+    steps:
+      - checkpoint: Semester__Erstsemester__branches
+      - intent: reject
+        user: Nein
+        entities: []
+      - checkpoint: link-to-Semester/360076da-346e-4907-9a4c-d70fc7cff799
+    metadata:
+      group: Datenerhebung
+  - story: Semester__Erstsemester__richtig
+    steps:
+      - checkpoint: Semester__Erstsemester__branches
+      - intent: confirm
+        user: Ja
+        entities: []
+      - checkpoint: link-to-Studiendauer/df9658ae-010d-4a63-b82b-16e1c663abd8
+    metadata:
+      group: Datenerhebung
+  - story: Semester__Semester gesetzt
+    steps:
+      - checkpoint: Semester__branches
+      - slot_was_set:
+          - semester_set: true
+      - action: utter_51_-czhZb
+      - checkpoint: Semester__Semester_gesetzt__branches
+    metadata:
+      group: Datenerhebung
+  - story: Semester__Semester gesetzt__falsch
+    steps:
+      - checkpoint: Semester__Semester_gesetzt__branches
+      - intent: reject
+        user: Nein
+        entities: []
+      - checkpoint: link-to-Hauptfach/c034d5b5-e6b5-4f1b-accb-b59a873e4f2c
+    metadata:
+      group: Datenerhebung
+  - story: Semester__Semester gesetzt__richtig
+    steps:
+      - checkpoint: Semester__Semester_gesetzt__branches
+      - intent: confirm
+        user: Ja
+        entities: []
+      - checkpoint: link-to-Abgeschlossene Module/b5679187-d6f2-428d-8559-05036feb3baf
+    metadata:
+      group: Datenerhebung
+  - story: Studiendauer
+    steps:
+      - checkpoint: link-to-Studiendauer/df9658ae-010d-4a63-b82b-16e1c663abd8
+      - action: action_fetch_semester_info
+      - action: utter_6mxZxOPLd
+      - intent: select_semester
+        user: Ich möchte 8 Semester studieren
+        entities:
+          - semester: '8'
+      - action: action_max_semester_length
+      - checkpoint: Studiendauer__branches
+    metadata:
+      group: Datenerhebung
+  - story: Studiendauer__gültige Semesteranzahl
+    steps:
+      - checkpoint: Studiendauer__branches
+      - slot_was_set:
+          - semester_set: true
+      - checkpoint: link-to-SWS/bb1a57f2-4d0d-4519-b7fd-79ccc6d60487
+    metadata:
+      group: Datenerhebung
+  - story: Studiendauer__ungültige Semesteranzahl
+    steps:
+      - checkpoint: Studiendauer__branches
+      - slot_was_set:
+          - semester_set: false
+      - action: utter_5UGDAG8u8
+      - checkpoint: link-to-Studiendauer/df9658ae-010d-4a63-b82b-16e1c663abd8
+    metadata:
+      group: Datenerhebung
+  - story: SWS
+    steps:
+      - checkpoint: link-to-SWS/bb1a57f2-4d0d-4519-b7fd-79ccc6d60487
+      - action: utter_7kBbR08Ag
+      - intent: select_sws
+        user: 15 SWS
+        entities:
+          - sws: 15 SWS
+      - action: action_save_sws
+      - action: utter_uPYFCM_9f
+      - checkpoint: link-to-Kurs Vorschlag/3643ffb9-c81a-4546-878c-2318f58b0981
+    metadata:
+      group: Datenerhebung
+rules: []
