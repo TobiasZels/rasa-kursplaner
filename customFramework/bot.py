@@ -1,9 +1,12 @@
 import re
+import requests
+import json
 
 class Bot:
     mainRoutine = 0
     subRoutine = 0
     highestIndex = 0
+    NLUUrl = "http://localhost:5005/model/parse"
     exit = False
     # What i learned in Codinginterviews if you have no clue how to solve a task just throw a random
     # Hashmap at it ^_^
@@ -37,6 +40,7 @@ class Bot:
                     dialogue.getFunction()()
 
 
+            # If Userinteraction is needed get the Input and process it to get slots/intets
             if needsInteraction:
                 intent, slots = self.fetchFromNLU(input())
                 success = False
@@ -60,7 +64,8 @@ class Bot:
                 # if even in the sub routibe nothing could be found then we need to return an error TODO
                 print("I didn't understand your message")
                 continue
-                        
+
+            # Print out the bot message and fill slots at runtime      
             for dialogue in dialogueList:
                 if dialogue.getHasSlots() == True:
                     dialogue.fillSlotIntoResponse(self.slotHashmap)
@@ -90,11 +95,28 @@ class Bot:
             self.highestIndex += 1
 
     def fetchFromNLU(self, input):
-        intent = "yes"
-        slot = input
-        slotname = "name"
-        slots = [{slotname: slot}]
+
+        object = {'text': input}
+        slots = {}
+
+        # Post request to the Rasa NLU model server
+        response = requests.post(self.NLUUrl, json=object)
+        resonseObject = json.loads(response.text)
+        
+        # Grab the intent 
+        intent = resonseObject["intent"]["name"]
+        
+        # Grab all the Entities to fill the slots
+        for entity in resonseObject["entities"]:
+            slot = entity["value"]
+            slotname = entity["entity"]
+            if slotname in slots:
+                slots[slotname].append(slot)
+                continue
+            slots[slotname] = [slot]
+
         return (intent, slots)
+
 
 class Dialogue:
     index = None
@@ -104,7 +126,6 @@ class Dialogue:
     templateResponse = None
     hasSlots = False
     subNodes = []
-
 
     def __init__(self, index=None, userIntent=None, action=None, botResponse=None, subNodes=None):
         self.index = index
