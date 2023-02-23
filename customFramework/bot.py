@@ -201,7 +201,7 @@ record = {
 "min_semester": 6,
 "max-semester": 9 
 } 
-rec = courseCollection.insert_one(record)
+# rec = courseCollection.insert_one(record)
 
 
 #for i in mydatabase.myTable.find({title: 'MongoDB and Python'})
@@ -209,8 +209,8 @@ rec = courseCollection.insert_one(record)
 
 def get_main_subject():
     m_subject = myBot.slotHashmap["subjects"][0]
-
-    if m_subject == "Medieninformatik":
+    
+    if not courseCollection.find_one({"main_subject": m_subject}) == None:
         myBot.setSlotValue("main_subject", m_subject)
         get_graduation()
         return
@@ -225,11 +225,16 @@ def get_graduation():
     if "graduation" in myBot.slotHashmap:
         m_graduation = myBot.slotHashmap["graduation"][0]
 
-    if m_graduation == "Bachelor":
-        myBot.setIndex(sub_subject.getIndex())
-        myBot.setSlotValue("graduation", m_graduation)
-        get_sub_subject()
-        return
+
+    # load the object form the Database
+    main_subject_data = courseCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
+
+    for grad in main_subject_data['graduation']:
+        if m_graduation == grad:
+            myBot.setIndex(sub_subject.getIndex())
+            myBot.setSlotValue("graduation", m_graduation)
+            get_sub_subject()
+            return
 
     if myBot.getIndex() > ask_graduation.getIndex():
         print("Der gewählte Abschluss ist für das geswünschte Studienfach nicht verfügbar.")
@@ -239,13 +244,39 @@ def get_graduation():
 
 def get_sub_subject():
     m_subject = None
+
     if "subjects" in myBot.slotHashmap:
         m_subject = myBot.slotHashmap["subjects"][-1]
 
-    if m_subject == "Informationswissenschaft":
-        myBot.setIndex(next_dialog.getIndex())
-        myBot.setSlotValue("sub_subject", m_subject)
-        return
+    sub_subject_list = []
+    # load the object form the Database
+    main_subject_data = courseCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
+    if myBot.slotHashmap["graduation"] == "Bachelor":
+        # test if array is empty
+        if len(main_subject_data["bachelor_sub_subjects"]) == 0:
+            myBot.setIndex(next_dialog.getIndex())
+            return
+
+        for sub in main_subject_data["bachelor_sub_subjects"]:
+            if m_subject == sub:
+                myBot.setIndex(next_dialog.getIndex())
+                myBot.setSlotValue("sub_subject", m_subject)
+                return
+    else:
+        # test if array is empty
+        if len(main_subject_data["master_sub_subjects"]) == 0:
+            myBot.setIndex(next_dialog.getIndex())
+            return
+
+        for sub in main_subject_data["master_sub_subjects"]:
+            if m_subject == sub:
+                myBot.setIndex(next_dialog.getIndex())
+                myBot.setSlotValue("sub_subject", m_subject)
+                return
+
+
+
+
 
     if myBot.getIndex() > sub_subject.getIndex():
         print("Das gewählte Nebenfach ist nicht mit dem Hauptfach kombinierbar.")
