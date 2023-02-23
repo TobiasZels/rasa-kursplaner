@@ -1,7 +1,7 @@
 import re
 import requests
 import json
-
+from pymongo import MongoClient
 
 class Dialogue:
     index = None
@@ -183,9 +183,29 @@ class Bot:
 
         return (intent, slots)
 
+########################
+# Code outside of Framework
+####################
 
 myBot = Bot()
+client = MongoClient('localhost', 27017)
+courseDatabase = client['kursplaner_database']
 
+courseCollection = courseDatabase["courseCollection"]
+
+record = {
+"main_subject": 'Medieninformatik', 
+"graduation": ['Bachelor', 'Master'], 
+"bachelor_sub_subjects": ['Informationswissenschaft'], 
+"master_sub_subjects": [], 
+"min_semester": 6,
+"max-semester": 9 
+} 
+rec = courseCollection.insert_one(record)
+
+
+#for i in mydatabase.myTable.find({title: 'MongoDB and Python'})
+#    print(i)
 
 def get_main_subject():
     m_subject = myBot.slotHashmap["subjects"][0]
