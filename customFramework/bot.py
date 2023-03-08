@@ -8,9 +8,11 @@ class Dialogue:
     userIntent = None
     action = None
     botResponse = None
+    botInstance = None
     templateResponse = None
     hasSlots = False
     subNodes = []
+    parent = None
 
     def __init__(self, index=None, userIntent=None, action=None, botResponse=None, subNodes=None):
         self.index = index
@@ -23,6 +25,11 @@ class Dialogue:
             slotFields = re.findall("\{\{(.*?)\}\}", botResponse)
             if len(slotFields) > 0:
                 self.hasSlots = True
+        # Set Parents for subnodes
+        if not subNodes == None:
+            for node in subNodes:
+                node.setParent(self)
+            
 
     def getIndex(self):
         return self.index     
@@ -39,11 +46,23 @@ class Dialogue:
     def getHasSlots(self):
         return self.hasSlots
     
+    def setBotInstance(self, instance):
+        self.botInstance = instance
+
+    def getBotInstance(self):
+        return self.botInstance
+
     def getFunction(self):
         return self.action
     
     def getSubNodes(self):
         return self.subNodes
+    
+    def setParent(self, parent):
+        self.parent = parent
+    
+    def getParent(self):
+        return self.parent
     
     def fillSlotIntoResponse(self, slots):
         slotFields = re.findall("\{\{(.*?)\}\}", self.botResponse)
@@ -66,12 +85,15 @@ class Bot:
     dialogueHashmap = {}
     slotHashmap = {}
 
-    def __init__(self, slotHashmap={}):
+    def __init__(self, slotHashmap={}, index = 0):
+        self.mainRoutine = index
         self.dialogueHashmap = {}
         self.slotHashmap = slotHashmap
         self.exit = False
     
-    def mainLoop(self):
+    def mainLoop(self, startfunction=None):
+        if not startfunction == None:
+            startfunction()
         while(not self.exit):
             # if the dialogue went outside the Hashmap end the loop/restart the loop
             if not self.mainRoutine in self.dialogueHashmap:
@@ -128,6 +150,12 @@ class Bot:
                 # Reset response to empty the filled slots again
                 dialogue.resetResponse()
 
+                # To enable Containering of Nodes
+                if not dialogue.getSubNodes() == None:
+                    subBot = Bot(slotHashmap=self.slotHashmap)
+                    subBot.addDialogue(dialogue.getSubNodes())
+                    subBot.mainLoop()
+
             # mainRoutine should only increase on successfull interaktions
             self.mainRoutine += 1
 
@@ -135,6 +163,8 @@ class Bot:
 
         # for each dialogue we add it to the hashmap
         for dialogue in dialogueArray:
+            # set bot instance
+            dialogue.setBotInstance(self)
             # Check if the dialogue has a object attached and set it to an index
             if isinstance(dialogue.getIndex(), Dialogue):
                 dialogue.setIndex(dialogue.getIndex().getIndex() + 1)
@@ -157,7 +187,39 @@ class Bot:
         self.slotHashmap[key] = value
     
     def setIndex(self, index):
-        self.mainRoutine = index -1
+        self.mainRoutine = index
+
+    def hasExited(self):
+        return self.exit
+
+    def jumpToDialog(self, dialog):
+        # AArgh first we need to get the container and then iterate through painge, but every container should
+        # run the loop anyways and jumping into the same container is not a problem cause of parents ( pain ) we
+        # can ignore that problem if we break the loop we are in after iterating through
+
+
+        # TODO create new bot instance 
+        
+        dialog.getBotInstance().setIndex(dialog.getIndex())
+
+        if dialog.getBotInstance().hasExited():
+            dialog.getBotInstance().exit == False
+            dialog.getBotInstance().mainLoop()
+        
+        # Iterate to the outmost Instance
+        if not dialog.getParent() == None:
+            dialog.getParent().getBotInstance().jumpToDialog(dialog.getParent())
+
+        # Set the index
+  
+
+
+
+
+
+        
+
+
 
     def getIndex(self):
         return self.mainRoutine
@@ -287,6 +349,14 @@ def get_sub_subject():
 def jump_main_subject():
     myBot.setIndex(ask_main_subject.getIndex())
 
+def validate_semester_select():
+    "Bitte geben sie eine gültige Semesterzahl zwischen {min_semester} und {max_semester} ein."
+
+def validate_max_semester_select():
+    "Bitte geben sie eine gültige Semesterzahl zwischen {min_semester} und {max_semester} ein."
+
+def seach_course_list():
+    ""
 
 dia5a = Dialogue(botResponse="Please enter your name.")
 dia6a = Dialogue(userIntent="yes")
@@ -315,9 +385,84 @@ action_get_graduation = Dialogue(action=lambda: get_graduation())
 sub_subject = Dialogue(botResponse="Was ist ihr Nebenfach?")
 ask_sub_subject = Dialogue(userIntent="select_fach")
 action_get_sub_subject = Dialogue(action=lambda: get_sub_subject())
-next_dialog = Dialogue(botResponse="Sie verfolgen {{main_subject}} mit {{sub_subject}} im {{graduation}}?")
+ask_study_time = Dialogue(botResponse="Für welches Semester möchten sie einen Stundenplan erstellen?")
+user_select_semester = Dialogue(userIntent="select_semester")
+action_get_sub_subject = Dialogue(action=lambda: validate_semester_select())
+next_dialog = Dialogue(botResponse="Sie befinden sich zurzeit im 1. Semester des {{graduation}} in {{main_subject}} mit {{sub_subject}}, ist das richtig?")
 next_dialog_yes = Dialogue(userIntent="confirm", index=next_dialog)
 next_dialog_no = Dialogue(userIntent="reject", index=next_dialog, subNodes=[jump_to_main_subject])
+ask_study_time = Dialogue(botResponse="Bis zu welchem Semester wollen Sie ihr Studium abschließen, empfohlen wird für {{main_subject}}  {{min_semester}} Semester mit einer maximalen Studiendauer von {{max_semester}} Semestern.")
+user_select_semester = Dialogue(userIntent="select_semester")
+action_get_sub_subject = Dialogue(action=lambda: validate_max_semester_select())
+ask_study_time = Dialogue(botResponse="Welche Module haben sie bisher Abgeschlossen?")
+user_select_semester = Dialogue(userIntent="select_module")
+#"Ihre bereits abgeschlossenen Module können sie unter (Flex-Now Link) einsehen."
+ask_study_time = Dialogue(botResponse="Haben sie Kurse aus noch nicht abgeschlossenen Modulen bereits besucht?")
+user_select_semester = Dialogue(userIntent="select_course")
+ask_study_time = Dialogue(botResponse="Wie viel Zeit möchten sie für ihr Studium dieses Semester aufbringen, um das Studium in der gewünschten Zeit abzuschließen werden {sws_empf} SWS empfohlen.")
+user_select_semester = Dialogue(userIntent="select_sws")
+ask_study_time = Dialogue(botResponse="Bitte warten sie während ich für Sie nach Kursen suche...")
+action_get_sub_subject = Dialogue(action=lambda: seach_course_list())
 
-myBot.addDialogue([intro, main_subject, ask_main_subject, action_get_main_subject, main_graduation, ask_graduation, action_get_graduation, sub_subject, ask_sub_subject, action_get_sub_subject,  next_dialog,next_dialog_yes ,next_dialog_no])
+# Idea use empty Dialogue Objects as containers and only us
+
+
+myBot.addDialogue([intro, main_subject, 
+                   ask_main_subject,
+                   action_get_main_subject, main_graduation, 
+                   ask_graduation, action_get_graduation, 
+                   sub_subject, ask_sub_subject, action_get_sub_subject,  
+                   next_dialog,next_dialog_yes ,next_dialog_no])
 myBot.mainLoop()
+
+
+# Alle Dialoge
+#    "Ihr gewähltes Fach wird an der Universität nicht als Hauptfach angeboten."
+#"Was ist ihr zweites Hauptfach/ ihre Nebenfächer?"
+#    "Die ausgewählte Fächerkombination {main_subject} mit {sub_subject} ist leider nicht möglich."
+#"Studieren sie {main_subject} im Bachelor oder Master Studiengang?"
+#    "Der angegebene Abschluss {graduation} in {main_subject} wird an der Universität leider nicht angeboten."
+
+# Alle Intents
+"select_fach"
+"select_semester"
+"select_sws"
+"needs_help"
+"confirm"
+"reject"
+"select_module"
+"select_course"
+
+# Alle actions
+"action_get_main_subject"
+"action_sub_subject_needed"
+"action_validate_sub_subject"
+"action_validate_graduation"
+
+
+#Kursauswahl
+
+# Alle Dialoge
+"Es konnten keine weiteren Kurse gefunden werde. Wollen sie ihre Suchkriterien ändern?"
+"Ihre Filterkriterien konnten leider keine Kurse finden. Bitte ändern sie diese."
+"Für das Modul {next_module} werden die Kurse {next_course_list} angeboten. Wählen sie ob und welchen Kurs sie belegen wollen oder stellen sie Fragen zu den einzelnen Kursen für weitere Informationen. "
+"Der Kurs {next_course} konnte leider nicht gefunden werden."
+"Kurs {next_course} wurde dem Stundenplan hinzugefügt."
+"Der Kurs {next_course} konnte leider nicht gefunden werden."
+"Für das Modul {next_module} wird der Kurs {next_course},  {speciality_text}, angeboten. Geben sie an ob sie diesen Kurs belegen wollen oder stellen sie Fragen zu dem Kurs für weitere Informationen."
+"Für den Abschluss ihres Studiums benötigen sie zusätzlich nur noch {lp_left}, möchten sie einen weiteren Kurs belegen um diese lp zu erreichen?"
+"Ihren Stundenplan können sie unter {schedule_link} einsehen. Möchten sie den Stundenplan übernehmen oder möchten sie Änderungen an diesem Vornehmen?"
+"Geben sie an welcher Kurs aus ihrem Stundenplan gelöscht werden soll oder nennen sie einen Kurs um diesen hinzuzufügen. "
+"Der angegebene Kurs existiert nicht."
+"Der Kurs {next_course} wurde dem Stundenplan hinzugefügt."
+"Sind sie sicher das der Kurs {next_course} von ihrem Stundenplan entfernt werden soll? Bitte beachten sie: {warning}"
+"Ihren Stundenplan können sie unter {schedule_link} einsehen."
+
+"{add_information}"
+"Ich hoffe ich konnte ihnen weiterhelfen, vergessen sie nicht ihre Kurse im Studienportal zu belegen."
+# Alle Intents
+"wants_information"
+"accept_course"
+"denie"
+"wants_studenplan"
+# Alle actions
