@@ -74,6 +74,32 @@ class Dialogue:
         self.botResponse = self.templateResponse
 
 
+class subDialogue:
+    intent = None
+    dialogueList = None
+    disabled = False
+
+    def __init__(self, userIntent, dialogue, standardDisabled=False):
+        self.intent = userIntent
+        self.dialogueList = dialogue
+        self.disabled = standardDisabled
+
+    def getIntent(self):
+        return self.intent
+    
+    def getDialogue(self):
+        return self.dialogueList
+    
+    def getDisabled(self):
+        return self.disabled
+    
+    def enable(self):
+        self.disabled = False
+    
+    def disable(self):
+        self.disable = True
+
+
 class Bot:
     mainRoutine = 0
     subRoutine = 0
@@ -83,6 +109,7 @@ class Bot:
     # What i learned in Codinginterviews if you have no clue how to solve a task just throw a random
     # Hashmap at it ^_^
     dialogueHashmap = {}
+    subRoutineList = []
     slotHashmap = {}
 
     def __init__(self, slotHashmap={}, index = 0):
@@ -136,6 +163,16 @@ class Bot:
                     continue
                 # if not the user entered something he wasn't supposed to so we first look into the subRoutine TODO
 
+                for subDialogue in self.subRoutineList:
+                    # First we need to confirm if the subDialogue is enabled at this point in time
+                    if subDialogue.getDisabled() == False:
+                        if subDialogue.getIntent() == intent:
+                            subBot = Bot(slotHashmap=self.slotHashmap)
+                            subBot.addDialogue(subDialogue.getDialogue())
+                            subBot.addSubDialogue(dialogueList = self.subRoutineList)
+                            subBot.mainLoop()
+                            # then go back one step so the user sees the last question again
+                            self.mainRoutine -= 1
                 # if even in the sub routibe nothing could be found then we need to return an error TODO
                 print("I didn't understand your message")
                 continue
@@ -154,6 +191,7 @@ class Bot:
                 if not dialogue.getSubNodes() == None:
                     subBot = Bot(slotHashmap=self.slotHashmap)
                     subBot.addDialogue(dialogue.getSubNodes())
+                    subBot.addSubDialogue(dialogueList = self.subRoutineList)
                     subBot.mainLoop()
 
             # mainRoutine should only increase on successfull interaktions
@@ -183,6 +221,10 @@ class Bot:
             self.dialogueHashmap[self.highestIndex] = [dialogue]
             self.highestIndex += 1
 
+    def addSubDialogue(self, dialogueList):
+        self.subRoutineList = dialogueList
+
+
     def setSlotValue(self, key,  value):
         self.slotHashmap[key] = value
     
@@ -191,6 +233,9 @@ class Bot:
 
     def hasExited(self):
         return self.exit
+    
+    def setExited(self, exited):
+        self.exit = exited
 
     def jumpToDialog(self, dialog):
         # AArgh first we need to get the container and then iterate through painge, but every container should
@@ -199,11 +244,11 @@ class Bot:
 
 
         # TODO create new bot instance 
-        
+
         dialog.getBotInstance().setIndex(dialog.getIndex())
 
         if dialog.getBotInstance().hasExited():
-            dialog.getBotInstance().exit == False
+            dialog.getBotInstance().setExited(False)
             dialog.getBotInstance().mainLoop()
         
         # Iterate to the outmost Instance
@@ -211,15 +256,6 @@ class Bot:
             dialog.getParent().getBotInstance().jumpToDialog(dialog.getParent())
 
         # Set the index
-  
-
-
-
-
-
-        
-
-
 
     def getIndex(self):
         return self.mainRoutine
@@ -336,10 +372,6 @@ def get_sub_subject():
                 myBot.setSlotValue("sub_subject", m_subject)
                 return
 
-
-
-
-
     if myBot.getIndex() > sub_subject.getIndex():
         print("Das gewählte Nebenfach ist nicht mit dem Hauptfach kombinierbar.")
         myBot.slotHashmap["subjects"].pop(-1)
@@ -407,12 +439,33 @@ action_get_sub_subject = Dialogue(action=lambda: seach_course_list())
 # Idea use empty Dialogue Objects as containers and only us
 
 
-myBot.addDialogue([intro, main_subject, 
-                   ask_main_subject,
-                   action_get_main_subject, main_graduation, 
-                   ask_graduation, action_get_graduation, 
-                   sub_subject, ask_sub_subject, action_get_sub_subject,  
-                   next_dialog,next_dialog_yes ,next_dialog_no])
+#myBot.addDialogue([intro, main_subject, 
+#                   ask_main_subject,
+#                   action_get_main_subject, main_graduation, 
+#                   ask_graduation, action_get_graduation, 
+#                   sub_subject, ask_sub_subject, action_get_sub_subject,  
+#                   next_dialog,next_dialog_yes ,next_dialog_no])
+
+
+def jumpToIntro():
+    #myBot.jumpToDialog(main_graduation)
+    return
+
+mainDiaSub = Dialogue(subNodes=[main_graduation, sub_subject])
+mainDia = Dialogue(subNodes=[intro, main_subject, mainDiaSub, ask_study_time])
+testJump = Dialogue(action=lambda: jumpToIntro())
+
+# Runs Main Dia everytime the user intents test
+subDialogue1 = subDialogue(userIntent="test", dialogue=mainDia, standardDisabled=True)
+
+# Sub dialogue can get Disabled like this
+subDialogue1.disable()
+
+# Or at initialisation like this with standardDiasabled = True
+subDialogue2 = subDialogue(userIntent="test2", dialogue=mainDiaSub, standardDisabled=True)
+
+myBot.addSubDialogue([subDialogue1])
+myBot.addDialogue([mainDia, testJump])
 myBot.mainLoop()
 
 
