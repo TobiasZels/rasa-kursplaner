@@ -478,9 +478,13 @@ myBot.addSubDialogue([subDialogue1])
 myBot.addDialogue([mainDia, testJump])
 subprocess.run(["ls", "-l"])
 t = threading.Thread(target=run_Rasa)
-s = threading.Thread(target=myBot.mainLoop, args=())
+#s = threading.Thread(target=myBot.mainLoop, args=())
 t.start()
-s.start()
+#s.start()
+
+
+# EEL
+
 
 # Alle Dialoge
 #    "Ihr gewähltes Fach wird an der Universität nicht als Hauptfach angeboten."
