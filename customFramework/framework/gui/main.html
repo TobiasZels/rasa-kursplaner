@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Website</title>
+    <link rel="stylesheet" href="./main.css">
+    <script type="text/javascript" src="/eel.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
+  </head>
+  <body>
+
+    <div class="chatarea" id="chatarea">
+        <template id="msgUser">
+            <div class="message_user">
+                <div class="chatbuble_user">ABV</div>
+            </div>
+        </template>
+        <template id="msgBot">
+            <div class="message_bot">
+                <div class="chatbuble_bot">CVA</div>
+            </div>
+        </template>
+      
+    </div>
+
+
+    <div class="chatbar">
+            <form class="chatinput">
+                <input class="inputfield" id="msgInput" placeholder="Schreibe eine Nachricht!">
+                <button type="submit" onclick="sendMessage(document.getElementById('msgInput').value, event)" class="sendbutton" > <i class="fa fa-paper-plane" aria-hidden="true"></i>
+                </button>
+            </form>
+    </div>
+
+
+
+	<script src="main.js"></script>
+  </body>
+</html>
+

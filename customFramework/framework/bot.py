@@ -2,9 +2,11 @@ import re
 import subprocess
 import os
 import threading
+import time
 import requests
 import json
 from pymongo import MongoClient
+import eel
 
 class Dialogue:
     index = None
@@ -265,7 +267,7 @@ class Bot:
         return self.mainRoutine
     
     def outputText(self, text):
-        pass
+        eel.botMessage(text)
 
     def fetchFromNLU(self, input):
 
@@ -459,7 +461,7 @@ def jumpToIntro():
     return
 
 mainDiaSub = Dialogue(subNodes=[main_graduation, sub_subject])
-mainDia = Dialogue(subNodes=[intro, main_subject, mainDiaSub, ask_study_time, ask_sub_subject])
+mainDia = Dialogue(subNodes=[intro, main_subject, mainDiaSub, ask_study_time])
 testJump = Dialogue(action=lambda: jumpToIntro())
 
 # Runs Main Dia everytime the user intents test
@@ -476,14 +478,26 @@ def run_Rasa():
 
 myBot.addSubDialogue([subDialogue1])
 myBot.addDialogue([mainDia, testJump])
-subprocess.run(["ls", "-l"])
-t = threading.Thread(target=run_Rasa)
-#s = threading.Thread(target=myBot.mainLoop, args=())
-t.start()
-#s.start()
+
+
+def startEel():
+    eel.init('gui')
+    eel.start('main.html')
+
+def startMain():
+    myBot.mainLoop(startfunction=lambda: time.sleep(5))
+f = threading.Thread(target=startEel)
+#t = threading.Thread(target=run_Rasa)
+s = threading.Thread(target=startMain)
+#t.start()
+f.start()
+s.start()
+
+
 
 
 # EEL
+
 
 
 # Alle Dialoge
