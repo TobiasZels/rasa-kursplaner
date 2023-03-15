@@ -1,4 +1,7 @@
 import re
+import subprocess
+import os
+import threading
 import requests
 import json
 from pymongo import MongoClient
@@ -13,14 +16,16 @@ class Dialogue:
     hasSlots = False
     subNodes = []
     parent = None
+    errorResponse = None
 
-    def __init__(self, index=None, userIntent=None, action=None, botResponse=None, subNodes=None):
+    def __init__(self, index=None, userIntent=None, action=None, botResponse=None, subNodes=None, errorResponse=None):
         self.index = index
         self.userIntent = userIntent
         self.action = action
         self.botResponse = botResponse
         self.subNodes = subNodes
         self.templateResponse = botResponse
+        self.errorResponse = errorResponse
         if not botResponse == None:
             slotFields = re.findall("\{\{(.*?)\}\}", botResponse)
             if len(slotFields) > 0:
@@ -63,6 +68,9 @@ class Dialogue:
     
     def getParent(self):
         return self.parent
+    
+    def getErrorResponse(self):
+        return self.errorResponse
     
     def fillSlotIntoResponse(self, slots):
         slotFields = re.findall("\{\{(.*?)\}\}", self.botResponse)
@@ -174,7 +182,7 @@ class Bot:
                             # then go back one step so the user sees the last question again
                             self.mainRoutine -= 1
                 # if even in the sub routibe nothing could be found then we need to return an error TODO
-                print("I didn't understand your message")
+                self.outputText("I didn't understand your message")
                 continue
 
             # Print out the bot message and fill slots at runtime      
@@ -183,7 +191,7 @@ class Bot:
                     dialogue.fillSlotIntoResponse(self.slotHashmap)
 
                 if not dialogue.getBotResponse() == None:   
-                    print(dialogue.getBotResponse())
+                    self.outputText(dialogue.getBotResponse())
                 # Reset response to empty the filled slots again
                 dialogue.resetResponse()
 
@@ -241,10 +249,6 @@ class Bot:
         # AArgh first we need to get the container and then iterate through painge, but every container should
         # run the loop anyways and jumping into the same container is not a problem cause of parents ( pain ) we
         # can ignore that problem if we break the loop we are in after iterating through
-
-
-        # TODO create new bot instance 
-
         dialog.getBotInstance().setIndex(dialog.getIndex())
 
         if dialog.getBotInstance().hasExited():
@@ -259,6 +263,9 @@ class Bot:
 
     def getIndex(self):
         return self.mainRoutine
+    
+    def outputText(self, text):
+        pass
 
     def fetchFromNLU(self, input):
 
@@ -452,7 +459,7 @@ def jumpToIntro():
     return
 
 mainDiaSub = Dialogue(subNodes=[main_graduation, sub_subject])
-mainDia = Dialogue(subNodes=[intro, main_subject, mainDiaSub, ask_study_time])
+mainDia = Dialogue(subNodes=[intro, main_subject, mainDiaSub, ask_study_time, ask_sub_subject])
 testJump = Dialogue(action=lambda: jumpToIntro())
 
 # Runs Main Dia everytime the user intents test
@@ -464,10 +471,16 @@ subDialogue1.disable()
 # Or at initialisation like this with standardDiasabled = True
 subDialogue2 = subDialogue(userIntent="test2", dialogue=mainDiaSub, standardDisabled=True)
 
+def run_Rasa():
+    subprocess.call(["rasa", "run" ,"--enable-api", "-m", "rasa-model/model.tar.gz"])
+
 myBot.addSubDialogue([subDialogue1])
 myBot.addDialogue([mainDia, testJump])
-myBot.mainLoop()
-
+subprocess.run(["ls", "-l"])
+t = threading.Thread(target=run_Rasa)
+s = threading.Thread(target=myBot.mainLoop, args=())
+t.start()
+s.start()
 
 # Alle Dialoge
 #    "Ihr gewähltes Fach wird an der Universität nicht als Hauptfach angeboten."
