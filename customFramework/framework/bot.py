@@ -7,6 +7,15 @@ import requests
 import json
 from pymongo import MongoClient
 import eel
+import concurrent.futures
+
+# For unknown reasons it won't work on Windows without this line
+# Mac works
+# Linux works
+# But no windows doesn't accept that its not needed
+# Even WSL has no problem without it
+thread_pool_ref = concurrent.futures.ThreadPoolExecutor
+
 
 class Dialogue:
     index = None
@@ -121,6 +130,7 @@ class Bot:
     dialogueHashmap = {}
     subRoutineList = []
     slotHashmap = {}
+    ainput = None
 
     def __init__(self, slotHashmap={}, index = 0):
         self.mainRoutine = index
@@ -154,7 +164,8 @@ class Bot:
 
             # If Userinteraction is needed get the Input and process it to get slots/intets
             if needsInteraction:
-                intent, slots = self.fetchFromNLU(input())
+                self.activateChat()
+                intent, slots = self.fetchFromNLU(self.awaitInput())
                 success = False
                 for dialogue in dialogueList:
                     # if the intent could be found then yay set the slot and continue
@@ -269,6 +280,19 @@ class Bot:
     def outputText(self, text):
         eel.botMessage(text)
 
+
+    def activateChat(self):
+        eel.activateChat()
+
+    def awaitInput(self):
+        Bot.ainput = None
+
+        while Bot.ainput == None:
+            time.sleep(1)   
+        return Bot.ainput
+
+
+
     def fetchFromNLU(self, input):
 
         object = {'text': input}
@@ -276,11 +300,11 @@ class Bot:
 
         # Post request to the Rasa NLU model server
         response = requests.post(self.NLUUrl, json=object)
-        resonseObject = json.loads(response.text)
+        responseObject = json.loads(response.text)
         # Grab the intent 
-        intent = resonseObject["intent"]["name"]
+        intent = responseObject["intent"]["name"]
         # Grab all the Entities to fill the slots
-        for entity in resonseObject["entities"]:
+        for entity in responseObject["entities"]:
             slot = entity["value"]
             slotname = entity["entity"]
             if slotname in slots:
@@ -461,7 +485,7 @@ def jumpToIntro():
     return
 
 mainDiaSub = Dialogue(subNodes=[main_graduation, sub_subject])
-mainDia = Dialogue(subNodes=[intro, main_subject, mainDiaSub, ask_study_time])
+mainDia = Dialogue(subNodes=[intro, main_subject, mainDiaSub, ask_study_time, ask_main_subject])
 testJump = Dialogue(action=lambda: jumpToIntro())
 
 # Runs Main Dia everytime the user intents test
@@ -474,30 +498,33 @@ subDialogue1.disable()
 subDialogue2 = subDialogue(userIntent="test2", dialogue=mainDiaSub, standardDisabled=True)
 
 def run_Rasa():
-    subprocess.call(["rasa", "run" ,"--enable-api", "-m", "rasa-model/model.tar.gz"])
+    subprocess.call(["rasa", "run" ,"--enable-api", "-m", "rasa-model/nlu-20230316-012451-gilded-range.tar.gz"])
 
 myBot.addSubDialogue([subDialogue1])
 myBot.addDialogue([mainDia, testJump])
+
 
 
 def startEel():
     eel.init('gui')
     eel.start('main.html')
 
+
 def startMain():
-    myBot.mainLoop(startfunction=lambda: time.sleep(5))
+    myBot.mainLoop(startfunction=lambda: time.sleep(10))
+
 f = threading.Thread(target=startEel)
-#t = threading.Thread(target=run_Rasa)
+t = threading.Thread(target=run_Rasa)
 s = threading.Thread(target=startMain)
-#t.start()
-f.start()
+t.start()
 s.start()
-
-
+f.start()
 
 
 # EEL
-
+@eel.expose
+def returnChat(input):
+    Bot.ainput = input
 
 
 # Alle Dialoge
