@@ -292,7 +292,10 @@ class Bot:
         return Bot.ainput
 
 
-
+# Most important function for the Bot, for the course planner i used Rasa with a custom trained nlu model, but every NLU 
+# Framework can be used. The function has an input issued by the user and has to return an intent that describes the user intent 
+# and slots which has entity data in it. In future iterations the Rasa Framework can be replaced by more sufisticated solutions like
+# Chat GPT. 
     def fetchFromNLU(self, input):
 
         object = {'text': input}
@@ -334,42 +337,41 @@ record = {
 } 
 # rec = courseCollection.insert_one(record)
 
-
 #for i in mydatabase.myTable.find({title: 'MongoDB and Python'})
 #    print(i)
 
+# functions
 def get_main_subject():
     m_subject = myBot.slotHashmap["subjects"][0]
     
     if not courseCollection.find_one({"main_subject": m_subject}) == None:
         myBot.setSlotValue("main_subject", m_subject)
-        get_graduation()
+        get_graduation() #enables user to enter more information in one dialogue 
         return
 
     # Not a valid subject
-    print("Das gewählte Studienfach ist nicht verfügbar.")
-    myBot.setIndex(main_subject.getIndex())
-
+    myBot.outputText("Das gewählte Studienfach ist nicht verfügbar.")
+    myBot.setIndex(utter_ask_main_subject.getIndex())
 
 def get_graduation():
     m_graduation = None
     if "graduation" in myBot.slotHashmap:
         m_graduation = myBot.slotHashmap["graduation"][0]
 
-
     # load the object form the Database
     main_subject_data = courseCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
 
     for grad in main_subject_data['graduation']:
         if m_graduation == grad:
-            myBot.setIndex(sub_subject.getIndex())
+            myBot.setIndex(utter_ask_sub_subject.getIndex())
             myBot.setSlotValue("graduation", m_graduation)
             get_sub_subject()
             return
 
-    if myBot.getIndex() > ask_graduation.getIndex():
-        print("Der gewählte Abschluss ist für das geswünschte Studienfach nicht verfügbar.")
-        myBot.setIndex(main_graduation.getIndex())
+    # check if we should throw an error
+    if myBot.getIndex() > utter_ask_graduation.getIndex():
+        myBot.outputText("Der gewählte Abschluss ist für das geswünschte Studienfach nicht verfügbar.")
+        myBot.setIndex(utter_ask_graduation.getIndex())
         return
 
 
@@ -385,99 +387,226 @@ def get_sub_subject():
     if myBot.slotHashmap["graduation"] == "Bachelor":
         # test if array is empty
         if len(main_subject_data["bachelor_sub_subjects"]) == 0:
-            myBot.setIndex(next_dialog.getIndex())
+            myBot.setIndex(utter_ask_semester.getIndex())
+            validate_semester_select()
             return
 
         for sub in main_subject_data["bachelor_sub_subjects"]:
             if m_subject == sub:
-                myBot.setIndex(next_dialog.getIndex())
+                myBot.setIndex(utter_ask_semester.getIndex())
                 myBot.setSlotValue("sub_subject", m_subject)
+                validate_semester_select()
                 return
     else:
         # test if array is empty
         if len(main_subject_data["master_sub_subjects"]) == 0:
-            myBot.setIndex(next_dialog.getIndex())
+            myBot.setIndex(utter_ask_semester.getIndex())
+            validate_semester_select()
             return
 
         for sub in main_subject_data["master_sub_subjects"]:
             if m_subject == sub:
-                myBot.setIndex(next_dialog.getIndex())
+                myBot.setIndex(utter_ask_semester.getIndex())
                 myBot.setSlotValue("sub_subject", m_subject)
+                validate_semester_select()
                 return
 
-    if myBot.getIndex() > sub_subject.getIndex():
-        print("Das gewählte Nebenfach ist nicht mit dem Hauptfach kombinierbar.")
+    if myBot.getIndex() > utter_ask_sub_subject.getIndex():
+        myBot.outputText("Das gewählte Nebenfach ist nicht mit dem Hauptfach kombinierbar.")
         myBot.slotHashmap["subjects"].pop(-1)
-        myBot.setIndex(sub_subject.getIndex())
+        myBot.setIndex(utter_ask_sub_subject.getIndex())
         return
 
-def jump_main_subject():
-    myBot.setIndex(ask_main_subject.getIndex())
 
 def validate_semester_select():
-    "Bitte geben sie eine gültige Semesterzahl zwischen {min_semester} und {max_semester} ein."
+    m_semester = None
+    if "semester" in myBot.slotHashmap:
+        m_semester = myBot.slotHashmap["semester"][0]
+
+    main_subject_data = courseCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
+    if m_semester < main_subject_data["max_semester"]:
+        myBot.setIndex(utter_validate_study_data.getIndex())
+        myBot.setSlotValue("semester", m_semester)
+        myBot.setSlotValue("min_semester", main_subject_data["min_semester"])
+        myBot.setSlotValue("max_semester", main_subject_data["max_semester"])
+        return
+    
+    if myBot.getIndex() > utter_ask_semester.getIndex():
+        myBot.outputText("Bitte geben sie eine Semesteranzahl zwischen " + 0 + " und " + main_subject_data["max_semester"] + " ein.")
+        myBot.setIndex(utter_ask_semester.getIndex())
+        return
+
+def jump_to_selection(dia):
+    myBot.setIndex(dia.getIndex())
+
 
 def validate_max_semester_select():
-    "Bitte geben sie eine gültige Semesterzahl zwischen {min_semester} und {max_semester} ein."
+    m_semester = None
+    if "semester" in myBot.slotHashmap:
+        m_semester = myBot.slotHashmap["semester"][-1]
 
-def seach_course_list():
-    ""
+    main_subject_data = courseCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
 
-dia5a = Dialogue(botResponse="Please enter your name.")
-dia6a = Dialogue(userIntent="yes")
-dia7a = Dialogue(botResponse="Thanks for entering your name, your name is {{name}}.")
-dia5b = Dialogue(botResponse="Sadge.")
+    if main_subject_data["min_semester"] < m_semester < main_subject_data["max_semester"]:
+        myBot.setSlotValue("study_duration", m_semester)
+        return
+    
+    myBot.outputText("Bitte geben sie eine Semesteranzahl zwischen " + main_subject_data["min_semester"] + " und " + main_subject_data["max_semester"] + " ein.")
+    myBot.setIndex(utter_ask_semester.getIndex())
 
+class User:
+    restlp = 0
 
-dia1 = Dialogue(botResponse="Hi welcome to my useless Bot")
-dia2 = Dialogue(botResponse="Do you want to enter your name?")
-dia3a = Dialogue(userIntent="no", index=2, subNodes=[dia5b])
-dia3b = Dialogue(userIntent="yes", index=2, subNodes=[dia5a, dia6a, dia7a])
-dia6 = Dialogue(botResponse="Thanks for using the Bot. {{name}}")
-
+test = User()
+def check_low_lp():
+    if test.restlp > 15:
+        jump_to_selection(utter_ask_for_changes_to_courseplan) 
 # Sub Dialoge
-jump_to_main_subject = Dialogue(action= lambda: jump_main_subject())
 
 
 # Main Dialoge
+
+# Intro
 intro = Dialogue(botResponse="Willkommen beim Kursplaner, im nachfolgenden werde ich sie bei der Auswahl ihrer Kurse für das nachfolgende Semester unterstützen.")
-main_subject = Dialogue(botResponse="Welches Fach studieren sie aktuell als Hauptfach?")
-ask_main_subject = Dialogue(userIntent="select_fach")
+
+# Main Subject
+utter_ask_main_subject = Dialogue(botResponse="Welches Fach studieren sie aktuell als Hauptfach?")
+user_intent_main_subject = Dialogue(userIntent="select_fach", errorResponse="Bitte geben sie ein gültiges Studienfach ein.")
 action_get_main_subject = Dialogue(action=lambda: get_main_subject())
-main_graduation = Dialogue(botResponse="Welchen Abschluss verfolgen sie?")
-ask_graduation = Dialogue(userIntent="select_graduation")
+
+# Graduation
+utter_ask_graduation = Dialogue(botResponse="Welchen Abschluss verfolgen sie?")
+user_intent_graduation= Dialogue(userIntent="select_graduation")
 action_get_graduation = Dialogue(action=lambda: get_graduation())
-sub_subject = Dialogue(botResponse="Was ist ihr Nebenfach?")
-ask_sub_subject = Dialogue(userIntent="select_fach")
+
+# Sub Subject
+utter_ask_sub_subject = Dialogue(botResponse="Was ist ihr Nebenfach?")
+user_intent_sub_subject= Dialogue(userIntent="select_fach")
 action_get_sub_subject = Dialogue(action=lambda: get_sub_subject())
-ask_study_time = Dialogue(botResponse="Für welches Semester möchten sie einen Stundenplan erstellen?")
-user_select_semester = Dialogue(userIntent="select_semester")
-action_get_sub_subject = Dialogue(action=lambda: validate_semester_select())
-next_dialog = Dialogue(botResponse="Sie befinden sich zurzeit im 1. Semester des {{graduation}} in {{main_subject}} mit {{sub_subject}}, ist das richtig?")
-next_dialog_yes = Dialogue(userIntent="confirm", index=next_dialog)
-next_dialog_no = Dialogue(userIntent="reject", index=next_dialog, subNodes=[jump_to_main_subject])
-ask_study_time = Dialogue(botResponse="Bis zu welchem Semester wollen Sie ihr Studium abschließen, empfohlen wird für {{main_subject}}  {{min_semester}} Semester mit einer maximalen Studiendauer von {{max_semester}} Semestern.")
-user_select_semester = Dialogue(userIntent="select_semester")
-action_get_sub_subject = Dialogue(action=lambda: validate_max_semester_select())
-ask_study_time = Dialogue(botResponse="Welche Module haben sie bisher Abgeschlossen?")
-user_select_semester = Dialogue(userIntent="select_module")
-#"Ihre bereits abgeschlossenen Module können sie unter (Flex-Now Link) einsehen."
-ask_study_time = Dialogue(botResponse="Haben sie Kurse aus noch nicht abgeschlossenen Modulen bereits besucht?")
-user_select_semester = Dialogue(userIntent="select_course")
-ask_study_time = Dialogue(botResponse="Wie viel Zeit möchten sie für ihr Studium dieses Semester aufbringen, um das Studium in der gewünschten Zeit abzuschließen werden {sws_empf} SWS empfohlen.")
-user_select_semester = Dialogue(userIntent="select_sws")
-ask_study_time = Dialogue(botResponse="Bitte warten sie während ich für Sie nach Kursen suche...")
-action_get_sub_subject = Dialogue(action=lambda: seach_course_list())
 
-# Idea use empty Dialogue Objects as containers and only us
+# Semester
+utter_ask_semester = Dialogue(botResponse="Für welches Semester möchten sie einen Stundenplan erstellen?")
+user_intent_semester = Dialogue(userIntent="select_semester")
+action_get_semester = Dialogue(action=lambda: validate_semester_select())
+
+# validate data
+jump_to_main_subject = Dialogue(action= lambda: jump_to_selection(utter_ask_main_subject))
+
+utter_validate_study_data = Dialogue(botResponse="Sie befinden sich zurzeit im 1. Semester des {{graduation}} in {{main_subject}} mit {{sub_subject}}, ist das richtig?")
+user_validate_dialog_yes = Dialogue(userIntent="confirm", index=utter_validate_study_data)
+user_validate_dialog_no = Dialogue(userIntent="reject", index=utter_validate_study_data, subNodes=[jump_to_main_subject])
+
+# Select max study time
+utter_ask_study_time = Dialogue(botResponse="Bis zu welchem Semester wollen Sie ihr Studium abschließen, empfohlen wird für {{main_subject}}  {{min_semester}} Semester mit einer maximalen Studiendauer von {{max_semester}} Semestern.")
+user_intent_study_time = Dialogue(userIntent="select_semester")
+action_get_study_time = Dialogue(action=lambda: validate_max_semester_select())
+
+# Select finished Modules
+action_get_modules = Dialogue(action=lambda: validate_selected_Modules())
+utter_give_flex_now = Dialogue(botResponse="Ihre bereits abgeschlossenen Module können sie unter (Flex-Now Link) einsehen.")
+jumpt_to_models = Dialogue(action=lambda: jump_to_selection(utter_ask_for_modules))
+
+utter_ask_for_modules = Dialogue(botResponse="Welche Module haben sie bisher Abgeschlossen?")
+user_intent_modules = Dialogue(userIntent="select_module", index=utter_ask_for_modules, subNodes=[action_get_modules])
+user_intent_ask_for_help = Dialogue(userIntent="needs_help", index=utter_ask_for_modules, subNodes=[utter_give_flex_now, jumpt_to_models])
+
+# Select courses
+action_get_courses = Dialogue(action=lambda: validate_selected_Courses())
+
+utter_ask_for_courses = Dialogue(botResponse="Haben sie Kurse aus noch nicht abgeschlossenen Modulen bereits besucht, wenn ja welche?")
+user_validate_courses_no = Dialogue(userIntent="reject", index=utter_ask_for_courses)
+user_intent_select_course = Dialogue(userIntent="select_course", index=utter_ask_for_courses, subNodes=[action_get_courses])
+
+# Select time frame 
+utter_ask_for_sws = Dialogue(botResponse="Wie viel Zeit möchten sie für ihr Studium dieses Semester aufbringen, um das Studium in der gewünschten Zeit abzuschließen werden {{sws_empf}} SWS empfohlen.")
+user_intent_sws = Dialogue(userIntent="select_sws")
+action_get_sws= Dialogue(action=lambda: validate_sws())
+
+# finish Datenerhebung
+"Ihre Filterkriterien konnten leider keine Kurse finden. Bitte ändern sie diese."
+"Es konnten keine weiteren Kurse gefunden werde. Wollen sie ihre Suchkriterien ändern?"
+
+utter_finish_data_collection = Dialogue(botResponse="Bitte warten sie während ich für Sie nach Kursen suche...")
+action_finish_data_collection = Dialogue(action=lambda: seach_course_list())
+
+# Part one of the Bot getting the information from the user
+Datenerhebung_Container = Dialogue(subNodes=[
+    utter_ask_main_subject, user_intent_main_subject, action_get_main_subject,
+    utter_ask_graduation, user_intent_graduation, action_get_graduation,
+    utter_ask_sub_subject, user_intent_sub_subject, action_get_sub_subject,
+    utter_ask_semester, user_intent_semester, action_get_semester,
+    utter_validate_study_data, user_validate_dialog_yes, user_validate_dialog_no,
+    utter_ask_study_time, user_intent_study_time, action_get_study_time,
+    utter_ask_for_modules, user_intent_modules, user_intent_ask_for_help,
+    utter_ask_for_courses, user_validate_courses_no, user_intent_select_course,
+    utter_ask_for_sws, user_intent_sws, action_get_sws,
+    utter_finish_data_collection
+])
+
+# Select course
+action_wants_information = Dialogue(action= lambda: get_information())
+
+"Kurs {next_course} wurde dem Stundenplan hinzugefügt."
+"Der Kurs {next_course} konnte leider nicht gefunden werden."
+
+action_selects_course = Dialogue(action= lambda: select_course())
+
+utter_found_course = Dialogue(botResponse="Für das Modul {{next_module}} werden die Kurse {{next_course_list}} angeboten. Wählen sie ob und welchen Kurs sie belegen wollen oder stellen sie Fragen zu den einzelnen Kursen für weitere Informationen.")
+user_intent_ask_more_information = Dialogue(userIntent="wants_information", index=utter_found_course, subNodes=[action_wants_information])
+user_intent_select_course = Dialogue(userIntent="accept_course", index=utter_found_course, subNodes=[action_selects_course])
+
+# check for low lp
+action_check_for_low_lp = Dialogue(action= lambda: check_low_lp())
+    # if not low lp
+jump_to_found_course = Dialogue(action=lambda: jump_to_selection(utter_found_course))
+
+utter_ask_for_aditional_courses = Dialogue(botResponse="Für den Abschluss ihres Studiums benötigen sie zusätzlich nur noch {{lp_left}}, möchten sie einen weiteren Kurs belegen um diese lp zu erreichen?")
+user_aditional_courses_dialog_yes = Dialogue(userIntent="confirm", index=utter_ask_for_aditional_courses, subNodes=[jump_to_found_course])
+user_aditional_courses_dialog_no = Dialogue(userIntent="reject", index=utter_ask_for_aditional_courses)
+
+# finish studnenplan
+
+## Subdialoge
+action_add_course = Dialogue(action= lambda: select_course())
+action_remove_course = Dialogue(action= lambda: remove_course())
+action_jump_to_ask_change = Dialogue(action= lambda: jump_to_selection(utter_ask_what_changes))
+
+utter_remove_course = Dialogue(botResponse="Sind sie sicher das der Kurs {{next_course}} von ihrem Stundenplan entfernt werden soll? Bitte beachten sie: {{warning}}")
+user_wants_removal = Dialogue(userIntent="confim", index=utter_remove_course, subNodes=[action_remove_course])
+user_reject_removal = Dialogue(userIntent="reject", index=utter_remove_course, subNodes=[action_jump_to_ask_change])
+
+utter_ask_what_changes = Dialogue(botResponse="Geben sie an welcher Kurs aus ihrem Stundenplan gelöscht werden soll oder nennen sie einen Kurs um diesen hinzuzufügen.")
+user_intent_add_course = Dialogue(userIntent="wants_course", index=utter_ask_what_changes, subNodes=[action_add_course])
+user_intent_delete_course = Dialogue(userIntent="remove_course", index=utter_ask_what_changes, subNodes=[utter_remove_course])
 
 
-#myBot.addDialogue([intro, main_subject, 
-#                   ask_main_subject,
-#                   action_get_main_subject, main_graduation, 
-#                   ask_graduation, action_get_graduation, 
-#                   sub_subject, ask_sub_subject, action_get_sub_subject,  
-#                   next_dialog,next_dialog_yes ,next_dialog_no])
+## Main dialog
+utter_ask_for_changes_to_courseplan = Dialogue(botResponse="Ihren Stundenplan können sie unter {{schedule_link}} einsehen. Möchten sie den Stundenplan übernehmen oder möchten sie Änderungen an diesem Vornehmen?")
+user_reject_changes = Dialogue(userIntent="reject", index=utter_ask_for_changes_to_courseplan)
+user_wants_changes = Dialogue(userIntent="confirm", index=utter_ask_for_changes_to_courseplan, subNodes=[utter_ask_what_changes])
+
+# return stundenplan
+utter_return_stundenplan = Dialogue(botResponse="Ihren fertigen Stundenplan können sie unter {{schedule_link}} einsehen.")
+
+
+# Part two of the Bot selecting courses
+Kursauswahl_Container = Dialogue(subNodes=[
+    utter_found_course, user_intent_ask_more_information, user_intent_select_course,
+    action_check_for_low_lp, utter_ask_for_aditional_courses, user_aditional_courses_dialog_no, user_aditional_courses_dialog_yes,
+    utter_ask_for_changes_to_courseplan, user_reject_changes, user_wants_changes,
+    utter_return_stundenplan
+])
+
+
+last_information = Dialogue(botResponse="{{add_information}}")
+bot_finished = Dialogue(botResponse="Ich hoffe ich konnte ihnen weiterhelfen, vergessen sie nicht ihre Kurse im Studienportal zu belegen.")
+
+myBot.addDialogue([intro, Datenerhebung_Container, action_finish_data_collection, Kursauswahl_Container, last_information, bot_finished])
+
+
+
+
+
 
 
 def jumpToIntro():
@@ -498,7 +627,7 @@ subDialogue1.disable()
 subDialogue2 = subDialogue(userIntent="test2", dialogue=mainDiaSub, standardDisabled=True)
 
 def run_Rasa():
-    subprocess.call(["rasa", "run" ,"--enable-api", "-m", "rasa-model/nlu-20230316-012451-gilded-range.tar.gz"])
+    subprocess.call(["rasa", "run" ,"--enable-api", "-m", "rasa-model/nlu-20230318-151247-cerulean-urn.tar.gz"])
 
 myBot.addSubDialogue([subDialogue1])
 myBot.addDialogue([mainDia, testJump])
@@ -520,6 +649,8 @@ t.start()
 s.start()
 f.start()
 
+
+# The courseplanner app uses EEL for its frontend.
 
 # EEL
 @eel.expose
@@ -553,27 +684,14 @@ def returnChat(input):
 
 #Kursauswahl
 
-# Alle Dialoge
-"Es konnten keine weiteren Kurse gefunden werde. Wollen sie ihre Suchkriterien ändern?"
-"Ihre Filterkriterien konnten leider keine Kurse finden. Bitte ändern sie diese."
-"Für das Modul {next_module} werden die Kurse {next_course_list} angeboten. Wählen sie ob und welchen Kurs sie belegen wollen oder stellen sie Fragen zu den einzelnen Kursen für weitere Informationen. "
-"Der Kurs {next_course} konnte leider nicht gefunden werden."
-"Kurs {next_course} wurde dem Stundenplan hinzugefügt."
-"Der Kurs {next_course} konnte leider nicht gefunden werden."
-"Für das Modul {next_module} wird der Kurs {next_course},  {speciality_text}, angeboten. Geben sie an ob sie diesen Kurs belegen wollen oder stellen sie Fragen zu dem Kurs für weitere Informationen."
-"Für den Abschluss ihres Studiums benötigen sie zusätzlich nur noch {lp_left}, möchten sie einen weiteren Kurs belegen um diese lp zu erreichen?"
-"Ihren Stundenplan können sie unter {schedule_link} einsehen. Möchten sie den Stundenplan übernehmen oder möchten sie Änderungen an diesem Vornehmen?"
-"Geben sie an welcher Kurs aus ihrem Stundenplan gelöscht werden soll oder nennen sie einen Kurs um diesen hinzuzufügen. "
-"Der angegebene Kurs existiert nicht."
-"Der Kurs {next_course} wurde dem Stundenplan hinzugefügt."
-"Sind sie sicher das der Kurs {next_course} von ihrem Stundenplan entfernt werden soll? Bitte beachten sie: {warning}"
-"Ihren Stundenplan können sie unter {schedule_link} einsehen."
+dia5a = Dialogue(botResponse="Please enter your name.")
+dia6a = Dialogue(userIntent="yes")
+dia7a = Dialogue(botResponse="Thanks for entering your name, your name is {{name}}.")
+dia5b = Dialogue(botResponse="Sadge.")
 
-"{add_information}"
-"Ich hoffe ich konnte ihnen weiterhelfen, vergessen sie nicht ihre Kurse im Studienportal zu belegen."
-# Alle Intents
-"wants_information"
-"accept_course"
-"denie"
-"wants_studenplan"
-# Alle actions
+
+dia1 = Dialogue(botResponse="Hi welcome to my useless Bot")
+dia2 = Dialogue(botResponse="Do you want to enter your name?")
+dia3a = Dialogue(userIntent="no", index=2, subNodes=[dia5b])
+dia3b = Dialogue(userIntent="yes", index=2, subNodes=[dia5a, dia6a, dia7a])
+dia6 = Dialogue(botResponse="Thanks for using the Bot. {{name}}")
