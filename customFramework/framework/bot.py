@@ -87,6 +87,9 @@ class Dialogue:
         slotFields = re.findall("\{\{(.*?)\}\}", self.botResponse)
         for slot in slotFields:
             if slot in slots:
+                slotValue = slots[slot]
+                if isinstance(slotValue, int):
+                    slotValue = str(slotValue)
                 self.botResponse = self.botResponse.replace("{{" + slot + "}}", slots[slot])
 
     def resetResponse(self):
@@ -165,9 +168,12 @@ class Bot:
             # If Userinteraction is needed get the Input and process it to get slots/intets
             if needsInteraction:
                 self.activateChat()
+
                 intent, slots = self.fetchFromNLU(self.awaitInput())
                 success = False
                 for dialogue in dialogueList:
+                    self.logConversationData(intent, slots, dialogue.getUserIntent())
+
                     # if the intent could be found then yay set the slot and continue
                     if dialogue.getUserIntent() == intent:
                         for elements in slots:
@@ -195,9 +201,9 @@ class Bot:
                             # then go back one step so the user sees the last question again
                             self.mainRoutine -= 1
                 # if even in the sub routibe nothing could be found then we need to return an error TODO
-                self.outputText("I didn't understand your message")
+                self.outputText("Ich konnte die Nachricht nicht verstehen.")
                 continue
-
+            
             # Print out the bot message and fill slots at runtime      
             for dialogue in dialogueList:
                 if dialogue.getHasSlots() == True:
@@ -217,6 +223,11 @@ class Bot:
 
             # mainRoutine should only increase on successfull interaktions
             self.mainRoutine += 1
+
+    def logConversationData(self, intent, slots, dialogueIntent):
+        print(intent)
+        print(slots)
+        print(dialogueIntent)
 
     def addDialogue(self, dialogueArray):
 
@@ -320,21 +331,45 @@ class Bot:
 ########################
 # Code outside of Framework
 ####################
+class User:
+    finishedCourses = []
+    possibleCourses = []
+    selectedCourses = []
+    finishedModules = []
+    possibleModules = []
+    selectedModules = []
+    selectedSWS = 0
+    semester = 0
+    lp = 0
+    restlp = 0
 
+    def calculateRestLP(self):
+        self.lp = 0
+        for module in self.selectedModules:
+            moduleData = courseCollection.find_one({"module": module})
+            if not moduleData == None:
+                self.lp += moduleData.lp
+
+        self.restlp = 150 - self.lp
+
+
+currentUser = User()    
 myBot = Bot()
 client = MongoClient('localhost', 27017)
 courseDatabase = client['kursplaner_database']
 
-courseCollection = courseDatabase["courseCollection"]
 
-record = {
-"main_subject": 'Medieninformatik', 
-"graduation": ['Bachelor', 'Master'], 
-"bachelor_sub_subjects": ['Informationswissenschaft'], 
-"master_sub_subjects": [], 
-"min_semester": 6,
-"max-semester": 9 
-} 
+courseCollection = courseDatabase["courseCollection"]
+studyCollection = courseDatabase["studyCollection"]
+
+exempStudyplan = {
+    1: ["PI-BA-M01.1", "PI-BA-M01.2", "MEI-BA-M01a.1", "MEI-BA-M01a.2", "MEI-BA-M02.1", "MEI-BA-M02.2"],
+    2: ["PI-BA-M02.1", "PI-BA-M02.2", "MEI-BA-M01a.3", "MEI-BA-M03.1", "MEI-BA-M03.2", "MEI-BA-M04.1", "MEI-BA-M04.2"],
+    3: ["PI-BA-M04.1", "PI-BA-M04.2", "MEI-BA-M06.1", "MEI-BA-M06.2"],
+    4: ["PI-BA-M03.1", "PI-BA-M03.2", "MEI-BA-M07.1", "MEI-BA-M07.2", "MEI-BA-M08.1", "MEI-BA-M08.2"],
+    5: ["MEI-BA-M05.1", "MEI-BA-M05.2", "MEI-BA-M09.1", "MEI-BA-M09.2", "MEI-BA-M10.1", "MEI-BA-M10.2", "MEI-BA-M10.3"],
+    6: ["MEI-BA-M10.4"]}
+
 # rec = courseCollection.insert_one(record)
 
 #for i in mydatabase.myTable.find({title: 'MongoDB and Python'})
@@ -344,7 +379,7 @@ record = {
 def get_main_subject():
     m_subject = myBot.slotHashmap["subjects"][0]
     
-    if not courseCollection.find_one({"main_subject": m_subject}) == None:
+    if not studyCollection.find_one({"main_subject": m_subject}) == None:
         myBot.setSlotValue("main_subject", m_subject)
         get_graduation() #enables user to enter more information in one dialogue 
         return
@@ -359,7 +394,7 @@ def get_graduation():
         m_graduation = myBot.slotHashmap["graduation"][0]
 
     # load the object form the Database
-    main_subject_data = courseCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
+    main_subject_data = studyCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
 
     for grad in main_subject_data['graduation']:
         if m_graduation == grad:
@@ -383,7 +418,7 @@ def get_sub_subject():
 
     sub_subject_list = []
     # load the object form the Database
-    main_subject_data = courseCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
+    main_subject_data = studyCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
     if myBot.slotHashmap["graduation"] == "Bachelor":
         # test if array is empty
         if len(main_subject_data["bachelor_sub_subjects"]) == 0:
@@ -422,9 +457,12 @@ def validate_semester_select():
     m_semester = None
     if "semester" in myBot.slotHashmap:
         m_semester = myBot.slotHashmap["semester"][0]
-
-    main_subject_data = courseCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
-    if m_semester < main_subject_data["max_semester"]:
+    else:
+        return
+        
+    
+    main_subject_data = studyCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
+    if int(m_semester) < main_subject_data["max_semester"]:
         myBot.setIndex(utter_validate_study_data.getIndex())
         myBot.setSlotValue("semester", m_semester)
         myBot.setSlotValue("min_semester", main_subject_data["min_semester"])
@@ -445,7 +483,7 @@ def validate_max_semester_select():
     if "semester" in myBot.slotHashmap:
         m_semester = myBot.slotHashmap["semester"][-1]
 
-    main_subject_data = courseCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
+    main_subject_data = studyCollection.find_one({"main_subject": myBot.slotHashmap["main_subject"]})
 
     if main_subject_data["min_semester"] < m_semester < main_subject_data["max_semester"]:
         myBot.setSlotValue("study_duration", m_semester)
@@ -454,8 +492,74 @@ def validate_max_semester_select():
     myBot.outputText("Bitte geben sie eine Semesteranzahl zwischen " + main_subject_data["min_semester"] + " und " + main_subject_data["max_semester"] + " ein.")
     myBot.setIndex(utter_ask_semester.getIndex())
 
-class User:
-    restlp = 0
+def validate_selected_Modules():
+    selectedModules = myBot.slotHashmap["modules"]
+    for modules in selectedModules:
+        currentUser.selectedModules.append(modules)
+
+def validate_selected_Courses():
+    selectedCourses = myBot.slotHashmap["courses"]
+    for course in selectedCourses:
+        currentUser.selectedCourses.append(course)
+    
+def validate_sws():
+    sws = myBot.slotHashmap["sws"]
+    currentUser.selectedSWS = sws
+    currentUser.calculateRestLP()
+
+def seach_course_list():
+    if len(currentUser.possibleModules) == 0:
+        courseData = courseCollection.find({"subject": myBot.slotHashmap["main_subject"]})
+        lastSemCourses = []
+        currentSemCourses = []
+        futureSemCourses = []
+        for courses in courseData:
+            if not courses["module"] in currentUser.finishedModules:
+                if len(courses["courses"]) > 0:
+                    if courses["type"] == "V" or courses["type"] == "S" or courses["type"] == "Ü":
+                        for i in range(6):
+                            thisSem = i +1
+                            if courses["module"] in exempStudyplan[thisSem]:
+                                if thisSem < currentUser.semester:
+                                    lastSemCourses.append(courses["module"])
+                                if thisSem > currentUser.semester:
+                                    futureSemCourses.append(courses["module"])
+                                if thisSem == currentUser.semester:
+                                   currentSemCourses.append(courses["module"])
+        # sorted by relevance 
+        currentUser.possibleModules = lastSemCourses + currentSemCourses + futureSemCourses
+
+    # if still empty no courses could be found ( shouldn't happen in this demo)
+    if len(currentUser.possibleModules) == 0:
+        myBot.outputText("Es konnten keine weiteren Kurse gefunden werde. Wollen sie ihre Suchkriterien ändern?")
+        # jumpt to the selection dialogue
+        # TODO jump_to_selection(user_aditional_courses_dialog_yes)
+        return
+    
+    # finally remove the first entry from the array and save it into next course
+    myBot.dialogueHashmap["next_module"] = currentUser.possibleModules[0]
+    del currentUser.possibleModules[0]
+
+    currentCourse = courseCollection.find_one({"module": myBot.slotHashmap["next_module"]})
+    myBot.dialogueHashmap["next_course_list"] = ""
+    for course in currentCourse["courses"]:
+        myBot.dialogueHashmap["next_course_list"] += course["name"]
+
+def get_information():
+    currentCourse = courseCollection.find_one({"module": myBot.slotHashmap["next_module"]})
+    for course in currentCourse["courses"]:
+        for information in course["information"]:
+            myBot.outputText(information["group"], + " finded am " + information["time"] + " in Raum " + information["room"] + " statt. Geleitet wird der Kurs von " + information["teacher"] + ". " + information["additionalInfo"] )
+
+def select_course():
+    currentUser.selectedCourses.append(myBot.slotHashmap["next_course"])
+    currentUser.selectedModules.append(myBot.slotHashmap["next_module"])
+    # TODO: get module
+    # TODO: create schedule link
+
+def remove_course():
+    # TODO: oposite of the function above
+    pass
 
 test = User()
 def check_low_lp():
@@ -492,7 +596,7 @@ action_get_semester = Dialogue(action=lambda: validate_semester_select())
 # validate data
 jump_to_main_subject = Dialogue(action= lambda: jump_to_selection(utter_ask_main_subject))
 
-utter_validate_study_data = Dialogue(botResponse="Sie befinden sich zurzeit im 1. Semester des {{graduation}} in {{main_subject}} mit {{sub_subject}}, ist das richtig?")
+utter_validate_study_data = Dialogue(botResponse="Sie befinden sich zurzeit im {{semester}} Semester des {{graduation}} in {{main_subject}} mit {{sub_subject}}, ist das richtig?")
 user_validate_dialog_yes = Dialogue(userIntent="confirm", index=utter_validate_study_data)
 user_validate_dialog_no = Dialogue(userIntent="reject", index=utter_validate_study_data, subNodes=[jump_to_main_subject])
 
@@ -523,8 +627,7 @@ user_intent_sws = Dialogue(userIntent="select_sws")
 action_get_sws= Dialogue(action=lambda: validate_sws())
 
 # finish Datenerhebung
-"Ihre Filterkriterien konnten leider keine Kurse finden. Bitte ändern sie diese."
-"Es konnten keine weiteren Kurse gefunden werde. Wollen sie ihre Suchkriterien ändern?"
+
 
 utter_finish_data_collection = Dialogue(botResponse="Bitte warten sie während ich für Sie nach Kursen suche...")
 action_finish_data_collection = Dialogue(action=lambda: seach_course_list())
@@ -613,24 +716,24 @@ def jumpToIntro():
     #myBot.jumpToDialog(main_graduation)
     return
 
-mainDiaSub = Dialogue(subNodes=[main_graduation, sub_subject])
-mainDia = Dialogue(subNodes=[intro, main_subject, mainDiaSub, ask_study_time, ask_main_subject])
-testJump = Dialogue(action=lambda: jumpToIntro())
+#mainDiaSub = Dialogue(subNodes=[main_graduation, sub_subject])
+#mainDia = Dialogue(subNodes=[intro, main_subject, mainDiaSub, ask_study_time, ask_main_subject])
+#testJump = Dialogue(action=lambda: jumpToIntro())
 
 # Runs Main Dia everytime the user intents test
-subDialogue1 = subDialogue(userIntent="test", dialogue=mainDia, standardDisabled=True)
+#subDialogue1 = subDialogue(userIntent="test", dialogue=mainDia, standardDisabled=True)
 
 # Sub dialogue can get Disabled like this
-subDialogue1.disable()
+#subDialogue1.disable()
 
 # Or at initialisation like this with standardDiasabled = True
-subDialogue2 = subDialogue(userIntent="test2", dialogue=mainDiaSub, standardDisabled=True)
+#subDialogue2 = subDialogue(userIntent="test2", dialogue=mainDiaSub, standardDisabled=True)
 
 def run_Rasa():
     subprocess.call(["rasa", "run" ,"--enable-api", "-m", "rasa-model/nlu-20230318-151247-cerulean-urn.tar.gz"])
 
-myBot.addSubDialogue([subDialogue1])
-myBot.addDialogue([mainDia, testJump])
+#myBot.addSubDialogue([subDialogue1])
+#myBot.addDialogue([mainDia, testJump])
 
 
 
