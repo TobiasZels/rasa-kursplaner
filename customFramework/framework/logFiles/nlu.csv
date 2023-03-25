@@ -1,0 +1,273 @@
+intent,entity,expected_intent
+select_graduation,{},select_fach
+select_semester,{},select_fach
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['5']},select_semester
+reject,{},confirm
+reject,{},reject
+select_graduation,{},select_fach
+select_semester,{},select_fach
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['10']},select_semester
+select_fach,{'subjects': ['Bioinformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Bioinformatik']},select_fach
+select_fach,{'subjects': ['Bioinformatik']},select_fach
+confirm,{},select_fach
+select_fach,{'subjects': ['Informatik']},select_fach
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_fach,{'subjects': ['Informationswissenschaft']},select_semester
+confirm,{},select_semester
+select_semester,{'semester': ['10']},select_semester
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+reject,{},select_graduation
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['10']},select_semester
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['10']},select_semester
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['10']},select_semester
+reject,{},confirm
+reject,{},reject
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['0']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['10']},select_semester
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['10']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['8']},select_semester
+select_semester,{'semester': ['MEI-PA-01']},select_module
+select_semester,{'semester': ['MEI-PA-01']},needs_help
+reject,{},select_module
+reject,{},needs_help
+confirm,{},select_module
+confirm,{},needs_help
+reject,{},select_module
+reject,{},needs_help
+reject,{},select_module
+reject,{},needs_help
+reject,{},select_module
+reject,{},needs_help
+confirm,{},select_module
+confirm,{},needs_help
+needs_help,{},select_module
+needs_help,{},needs_help
+select_modules,{'module': ['PI-BA-M01']},select_module
+select_modules,{'module': ['PI-BA-M01']},needs_help
+select_module,{'module': ['PI-BA-M01']},select_module
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['10']},select_semester
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['10']},select_semester
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['10']},select_semester
+select_semester,{'semester': ['9']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['9']},select_semester
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['9']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['9']},select_semester
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['6']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['6']},select_semester
+reject,{},select_module
+reject,{},needs_help
+reject,{},select_module
+reject,{},needs_help
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+reject,{},select_fach
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_semester,{'semester': ['10']},select_fach
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['6']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['6']},select_semester
+select_modules,{'module': ['PI-M01']},select_module
+select_modules,{'module': ['PI-M01']},needs_help
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['9']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['6']},select_semester
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15 SWS']},select_sws
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_fach,{'subjects': ['Informations']},select_graduation
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_fach,{'subjects': ['Informationswissenschaft']},select_graduation
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_semester
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['6']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['6']},select_semester
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['6']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['6']},select_semester
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['6']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['6']},select_semester
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+wants_information,{},wants_information
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_modules,{'module': ['PI-BA-M01']},select_semester
+select_semester,{'semester': ['6']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['6']},select_semester
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+wants_information,{},wants_information
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['5']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['6']},select_semester
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+wants_information,{},wants_information
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['6']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['7']},select_semester
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+wants_information,{},wants_information
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['6']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['7']},select_semester
+select_modules,{'module': ['PI-BA-M01']},select_module
+select_modules,{'module': ['PI-BA-M01']},needs_help
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+wants_information,{},wants_information
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['6']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['8']},select_semester
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+wants_information,{},wants_information
+reject,{},wants_information
+reject,{},reject
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['5']},select_semester
+reject,{},confirm
+reject,{},reject
+reject,{},wants_information
+reject,{},reject
+reject,{},wants_information
+reject,{},reject
+wants_information,{},wants_information
+confirm,{},wants_information
+confirm,{},reject
+accept_course,{},wants_information
+accept_course,{},reject
+nlu_fallback,{},wants_information
+nlu_fallback,{},reject
+accept_course,{'course': ['PI-BA-02']},wants_information
+accept_course,{'course': ['PI-BA-02']},reject
+accept_course,{'course': ['PI-BA-02']},wants_information
+accept_course,{'course': ['PI-BA-02']},reject
+select_fach,{'subjects': ['Medieninformatik']},select_fach
+select_graduation,{'graduation': ['Bachelor']},select_graduation
+select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+select_semester,{'semester': ['5']},select_semester
+confirm,{},confirm
+select_semester,{'semester': ['6']},select_semester
+select_modules,{'module': ['PI-BA-M01']},select_module
+select_modules,{'module': ['PI-BA-M01']},needs_help
+select_module,{'module': ['PI-BA-M01']},select_module
+reject,{},reject
+select_sws,{'sws': ['15sws']},select_sws
+reject,{},wants_information
+reject,{},accept_course
+reject,{},reject
+reject,{},wants_information
+reject,{},accept_course
+reject,{},reject
+reject,{},wants_information
+reject,{},accept_course
+reject,{},reject
+reject,{},wants_information
+reject,{},accept_course
+reject,{},reject
+accept_course,{},wants_information
+accept_course,{},accept_course
