@@ -246,17 +246,17 @@ nlu:
     language: de
   examples:
   - text: |
-      [15 SWS](sws)
+      [15] sws(sws)
     metadata:
       canonical: true
   - text: |
-      [5 sws](sws)
+      [5] sws(sws)
   - text: |
-      [6 sws](sws)
+      [6] sws(sws)
   - text: |
-      [9 sws](sws)
+      [9] sws(sws)
   - text: |
-      Ich möchte [13 SWS](sws) aufbringen
+      Ich möchte [13] sws (sws) aufbringen
     metadata:
       canonical: true
 - intent: user_happy
@@ -288,6 +288,23 @@ nlu:
   - text: |
       Ich möchte weiter Informationen einsehen
   - text: |
-      ich möchte Informationen zu Kurs [BA-PI-01](course) einsehen
+      ich möchte Informationen zu Kurs [BA-PI-01](module) einsehen
     metadata:
       canonical: true
+- intent: cancel
+  metadata:
+    language: de
+  examples:
+  - text: |
+      ich möchte nichts ändern
+  - text: |
+      abbrechen
+- intent: remove_course
+  metadata:
+    language: de
+  examples:
+  - text: |
+      ich möchte den Kurs [PI-MA-M01](module) entfernen
+  - text: |
+      Ich möchte den Kurs [PI-BA-M02.2](module) entfernen
+

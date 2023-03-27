@@ -1,7 +1,4 @@
 from bs4 import BeautifulSoup
-import pandas as pd
-from pprint import pprint
-import requests
 from pymongo import MongoClient
 
 
@@ -108,60 +105,42 @@ studyCollection = courseDatabase["studyCollection"]
 
 
 
+### SHOW
+_course_information = []
 
 
 
-## FOR BOT 
-moduleList = ["PI-BA-M01.1", "MEI-BA-M07.1"]
-semester = 2
-exempStudyplan = {
-    1: ["PI-BA-M01.1", "PI-BA-M01.2", "MEI-BA-M01a.1", "MEI-BA-M01a.2", "MEI-BA-M02.1", "MEI-BA-M02.2"],
-    2: ["PI-BA-M02.1", "PI-BA-M02.2", "MEI-BA-M01a.3", "MEI-BA-M03.1", "MEI-BA-M03.2", "MEI-BA-M04.1", "MEI-BA-M04.2"],
-    3: ["PI-BA-M04.1", "PI-BA-M04.2", "MEI-BA-M06.1", "MEI-BA-M06.2"],
-    4: ["PI-BA-M03.1", "PI-BA-M03.2", "MEI-BA-M07.1", "MEI-BA-M07.2", "MEI-BA-M08.1", "MEI-BA-M08.2"],
-    5: ["MEI-BA-M05.1", "MEI-BA-M05.2", "MEI-BA-M09.1", "MEI-BA-M09.2", "MEI-BA-M10.1", "MEI-BA-M10.2", "MEI-BA-M10.3"],
-    6: ["MEI-BA-M10.4"]
-}
+_course_information.append({"group": group,
+                "time": time,
+                "room": room,
+                "additionalInfo": additionalInfo,
+                "teacher": teacher})
 
-courseData = courseCollection.find({"subject": "Medieninformatik"})
-for courses in courseData:
-    if not courses["module"] in moduleList:
-        if len(courses["courses"]) > 0:
-            if courses["type"] == "V" or courses["type"] == "S" or courses["type"] == "Ü":
-                for i in range(6):
-                    thisSem = i +1
-                    if courses["module"] in exempStudyplan[thisSem]:
-                        if thisSem < semester:
-                            print("WICHTIG: " + courses["module"])
-                        if thisSem > semester:
-                            print("unwichtig: "+ courses["module"])
-                        if thisSem == semester:
-                            print("sollte nehmen: "+ courses["module"])
-                            print(courses["courses"])
+
+_courses.append({"id": course_id,
+                "name": course_name,
+                "information": _course_information})
 
 
 
 
 
+# Kursobject, welches in einem Array gespeichert und später in der Datenbank abgespeichert wird
+course_object.append({"id": _id,
+                    "module": _module,
+                    "lp": _lp.replace("(", "").replace(" LP) ", ""),
+                    "type": _type,
+                    "name": _name,
+                    "subject": "Medieninformatik",
+                    "graduation": "Bachelor",
+                    "courses": _courses})
 
 
-main_subject_data = studyCollection.find_one({"main_subject": "Medieninformatik"})
-print(8 < main_subject_data["max_semester"])
 
 
-
-
-exit()
-
-client = MongoClient('localhost', 27017)
-client.drop_database('kursplaner_database')
-courseDatabase = client['kursplaner_database']
-
-
-courseCollection = courseDatabase["courseCollection"]
-studyCollection = courseDatabase["studyCollection"]
-
-record = {
+###
+# Object mit dem Fach Medieninformatik
+medieninformatik = {
 "main_subject": 'Medieninformatik', 
 "graduation": ['Bachelor', 'Master'], 
 "bachelor_sub_subjects": ['Informationswissenschaft'], 
@@ -170,7 +149,17 @@ record = {
 "max_semester": 9 
 } 
 
+client = MongoClient('localhost', 27017)
 
-rec = studyCollection.insert_one(record)
+# Löschen der Datenbank zur vermeidung von duplikaten
+client.drop_database('kursplaner_database')
+courseDatabase = client['kursplaner_database']
+
+# Erstellen der beiden Tables für Kurse und Fächer
+courseCollection = courseDatabase["courseCollection"]
+studyCollection = courseDatabase["studyCollection"]
+
+# Eintragen der Daten in der Datenbank
+rec = studyCollection.insert_one(medieninformatik)
 rec = courseCollection.insert_many(course_object)
 
