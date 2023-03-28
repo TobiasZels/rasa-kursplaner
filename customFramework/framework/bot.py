@@ -204,8 +204,12 @@ class Bot:
                             continue
                             # then go back one step so the user sees the last question again
   
-                # if even in the sub routibe nothing could be found then we need to return an error TODO
-                self.outputText("Ich konnte die Nachricht nicht verstehen.")
+                # if even in the sub routibe nothing could be found then we need to return an error
+                if dialogueList[0].getErrorResponse():
+                    self.outputText(dialogueList[0].getErrorResponse())
+                    continue
+
+                self.outputText("IIch konnte sie leider nicht verstehen, versuchen sie es erneut.")
                 continue
             
             # Print out the bot message and fill slots at runtime      
