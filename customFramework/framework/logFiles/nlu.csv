@@ -1,1 +1,72 @@
-input,intent,entity,expected_intent
+input,intent,entity,expected_intentIch studiere Medieninformatik,select_fach,{'subjects': ['Medieninformatik']},select_fach
+Bachelor Medieninformatik,select_fach,"{'graduation': ['Bachelor'], 'subjects': ['Medieninformatik']}",select_fach
+Informationswissenschaft,select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+5,select_semester,{'semester': ['5']},select_semester
+ja,confirm,{},confirm
+8,select_semester,{'semester': ['8']},select_semester
+keine,reject,{},reject
+keine,reject,{},reject
+15 sws,select_sws,{'semester': ['15']},select_sws
+ja,confirm,{},wants_information
+ja,confirm,{},accept_course
+ja,confirm,{},reject
+will ich,confirm,{},wants_information
+will ich,confirm,{},accept_course
+will ich,confirm,{},reject
+den kurs nehme ich,accept_course,{},wants_information
+den kurs nehme ich,accept_course,{},accept_course
+Den kurs nehme ich,accept_course,{},wants_information
+Den kurs nehme ich,accept_course,{},accept_course
+Nehme ich,accept_course,{},wants_information
+Nehme ich,accept_course,{},accept_course
+Nehme ich,accept_course,{},wants_information
+Nehme ich,accept_course,{},accept_course
+Den nehme ich auch,accept_course,{},wants_information
+Den nehme ich auch,accept_course,{},accept_course
+Jup den will ich,confirm,{},wants_information
+Jup den will ich,confirm,{},accept_course
+Jup den will ich,confirm,{},reject
+Den nehme ihc,accept_course,{},wants_information
+Den nehme ihc,accept_course,{},accept_course
+nein,reject,{},user_happy
+nein,reject,{},user_unhappy
+keine änderungen,nlu_fallback,{},user_happy
+keine änderungen,nlu_fallback,{},user_unhappy
+Passt so,user_unhappy,{},user_happy
+Passt so,user_unhappy,{},user_unhappy
+abbrechen,cancel,{},select_course
+abbrechen,cancel,{},remove_course
+abbrechen,cancel,{},cancel
+änderungen vornehmen,user_unhappy,{},user_happy
+änderungen vornehmen,user_unhappy,{},user_unhappy
+keinen,reject,{},select_course
+keinen,reject,{},remove_course
+keinen,reject,{},cancel
+abbrechen,cancel,{},select_course
+abbrechen,cancel,{},remove_course
+abbrechen,cancel,{},cancel
+Passt,user_happy,{},user_happy
+Medieninfromatik,select_fach,{'subjects': ['Medieninfromatik']},select_fach
+Medieninformatik,select_fach,{'subjects': ['Medieninformatik']},select_fach
+Bachelor,select_graduation,{'graduation': ['Bachelor']},select_graduation
+Informationswissenschaft,select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+1.,select_semester,{'semester': ['1']},select_semester
+ja,confirm,{},confirm
+5,select_semester,{'semester': ['5']},select_semester
+6,select_semester,{'semester': ['6']},select_semester
+ ja,confirm,{},confirm
+6,select_semester,{'semester': ['6']},select_semester
+keine,reject,{},reject
+keine,reject,{},reject
+15sws,select_sws,{},select_sws
+will ich,confirm,{},wants_information
+will ich,confirm,{},accept_course
+will ich,confirm,{},reject
+Medieninformatik,select_fach,{'subjects': ['Medieninformatik']},select_fach
+Bachelor,select_graduation,{'graduation': ['Bachelor']},select_graduation
+Informationswissenschaft,select_fach,{'subjects': ['Informationswissenschaft']},select_fach
+5.,select_semester,{'semester': ['5']},select_semester
+ja,confirm,{},confirm
+10,select_semester,{'semester': ['10']},select_semester
+6,select_semester,{'semester': ['6']},select_semester
+keine,reject,{},reject

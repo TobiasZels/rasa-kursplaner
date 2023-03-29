@@ -133,12 +133,14 @@ nlu:
     - Der Stundenplan passt so
     - Ist in ordnung
     - passt
+    - Passt so
     - Ist ok
 - intent: user_unhappy
   examples: |
     - Ich will Änderungen vornehmen
     - Der passt so nicht
     - Ich möchte etwas ändern
+    - keine änderungen
     - passt so nicht
     - ich will etwas ändern
 - intent: cancel
