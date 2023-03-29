@@ -1,310 +1,156 @@
-version: "2.0"
+version: "3.1"
 nlu:
-- intent: accept_course
-  metadata:
-    language: de
-  examples:
-  - text: |
-      Ich möchte [PI-BA-02](course) belgen
-    metadata:
-      canonical: true
-  - text: |
-      Ich möchte den Kurs annehmen
-    metadata:
-      canonical: true
-  - text: |
-      Ich nehme den Kurs
+- intent: select_fach
+  examples: |
+    - [Medieninformatik](subjects)
+    - [Medieninformatik](subjects) studiere ich als Hauptfach
+    - Mein zweites Hauptfach ist [Informationswissenschaft](subjects)
+    - [Informationswissenschaft](subjects)
+    - Ich studiere [Medieninformatik](subjects)
+    - Ich studiere [Informationswissenschaft](subjects) zweites Hauptfach.
+    - Als Nebenfach studiere ich [Informationswissenschaft](subjects)
+    - Ich studiere [Medieninformatik](subjects) als [Bachelor](graduation)
+    - Ich studiere [Medieninformatik](subjects) im [Bachelor](graduation) mit [Informationswissenschaft](subjects)
+- intent: select_graduation
+  examples: |
+    - [Bachelor](graduation)
+    - [Master](graduation)
+    - Ich bin im [Bachelor](graduation)
+    - Ich mache den [Bachelor](graduation)
+    - Ich studiere im [Bachelor](graduation)
+    - Ich studiere ihn im [Bachelor](graduation)
+    - Im [Bachelor](graduation)
+- intent: select_semester
+  examples: |
+    - [1](semester)
+    - [2](semester).
+    - Ich bin im [1](semester). Semester
+    - Ich bin im [5](semester). Semester
+- intent: select_sws
+  examples: |
+    - [15](semester) sws
+    - [5](semester) sws
+    - Ich möchte [13](semester) sws aufbringen
+    - Ich will [12](semester) sws aufbringen
 - intent: confirm
-  metadata:
-    language: de
-  examples:
-  - text: |
-      Das stimmt
-    metadata:
-      canonical: true
-  - text: |
-      Ja
-  - text: |
-      Ja, ich will die Kriterien ändern
-  - text: |
-      Ja, ich will die Kriterien ändern.
-  - text: |
-      Ok
-- intent: needs_help
-  metadata:
-    language: de
-  examples:
-  - text: |
-      Keine Ahnung
-    metadata:
-      canonical: true
-  - text: |
-      Keine ahnung
+  examples: |
+    - ja
+    - jup
+    - Das stimmt
+    - Ja, ich will
+    - Positiv
+    - roger
+    - ok
+    - yes
 - intent: reject
-  metadata:
-    language: de
-  examples:
-  - text: |
-      Das ist nicht richtig
-    metadata:
-      canonical: true
-  - text: |
-      Das stimmt nicht
-  - text: |
-      Haben sie Kurse aus noch nicht abgeschlossenen Modulen bereits besucht?
-  - text: |
-      Ich möchte keine Kurse
-  - text: |
-      Ich möchte meinen Stundenplan einsehen
-  - text: |
-      Ich will einen anderen Kurs
-  - text: |
-      Nein
-  - text: |
-      Nein ich will die Kriterien nicht ändern
+  examples: |
+    - Das ist nicht richtig
+    - Das ist so nicht richtig
+    - Das stimmt nicht
+    - Das ist falsch
+    - Ich habe keine Kurse besucht
+    - Ich möchte das nicht
+    - Ich möchte einen anderen Kurs
+    - Nein
+    - Nein ich will das nicht
+    - Ich habe noch keine Module besucht
+    - Keine
+    - Null
+    - Nichts
+- intent: select_module
+  examples: |
+    - Habe [PI-BA-M01](module), [MEI-BA-M01](module), [MEI-BA-M02](module) und [PI-BA-M02](module) abgeschlossen
+    - Ich habe [A3-B2-12](module) abgeschlossen
+    - Ich habe AB-B3_12 abgeschlossen
+    - [MEI-BA-M04](module)
+    - [PI-BA-M01.1](module)
+    - [PI-BA-M01.2](module)
+    - [MEI-BA-M01a.1](module)
+    - [MEI-BA-M01a.2](module)
+    - [MEI-BA-M02.1](module)
+    - [MEI-BA-M02.2](module)
+    - [PI-BA-M02.1](module)
+    - [PI-BA-M02.2](module)
+    - [MEI-BA-M01a.3](module)
+    - [MEI-BA-M03.1](module)
+    - [MEI-BA-M03.2](module)
+    - [MEI-BA-M04.1](module)
+    - [MEI-BA-M04.2](module)
+    - [PI-BA-M04.1](module)
+    - [PI-BA-M04.2](module)
+    - [MEI-BA-M06.1](module)
+    - [MEI-BA-M06.2](module)
+    - [PI-BA-M03.1](module)
+    - [PI-BA-M03.2](module)
+    - [MEI-BA-M07.1](module)
+    - [MEI-BA-M07.2](module)
+    - [MEI-BA-M08.1](module)
+    - [MEI-BA-M08.2](module)
+    - [MEI-BA-M05.1](module)
+    - [MEI-BA-M05.2](module)
+    - [MEI-BA-M09.1](module)
+    - [MEI-BA-M09.2](module)
+    - [MEI-BA-M10.1](module)
+    - [MEI-BA-M10.2](module)
+    - [MEI-BA-M10.3](module)
+    - [MEI-BA-M10.4](module)
 - intent: select_course
-  metadata:
-    language: de
   examples: |
     - Ich habe [MMI](course) besucht
     - Ich möchte Kurs [MMI](course) entfernen
     - ja, ich habe [MMI](course) besucht
-- intent: select_fach
-  metadata:
-    language: de
-  examples:
-  - text: |
-      Als Nebenfach Studiere ich [Informationswissenschaft](subjects)
-    metadata:
-      canonical: true
-  - text: |
-      Als Nebenfach studiere ich [Informationswissenschaft](subjects)
-  - text: |
-      [Biologie](subjects)
-    metadata:
-      canonical: true
-  - text: |
-      Ich studiere [Informationswissenschaft](subjects) zweites Hauptfach.
-  - text: |
-      Ich studiere [Medieninformatik](subjects)
-  - text: |
-      [Informatik](subjects)
-    metadata:
-      canonical: true
-  - text: |
-      [Informationswissenschaft](subjects)
-  - text: |
-      [Infowissenschaft](subjects)
-    metadata:
-      canonical: true
-  - text: |
-      [Medieninfo](subjects)
-    metadata:
-      canonical: true
-  - text: |
-      [Medieninfomatik](subjects)
-    metadata:
-      canonical: true
-  - text: |
-      [Medieninformatik](subjects)
-    metadata:
-      canonical: true
-  - text: |
-      [Medieninformatik](subjects) studiere ich als Hauptfach
-  - text: |
-      [Medienwissen](subjects)
-    metadata:
-      canonical: true
-  - text: |
-      [Medienwissenschaft](subjects)
-    metadata:
-      canonical: true
-  - text: |
-      Mein zweites Hauptfach ist [Informationswissenschaft](subjects)
-  - text: |
-      [medieninformatik](subjects)
-    metadata:
-      canonical: true
-- intent: select_finished_course
-  metadata:
-    language: de
-  examples:
-  - text: |
-      Ja, ich habe [MMI](course) besucht
-    metadata:
-      canonical: true
-- intent: select_finsihed_course
-  metadata:
-    language: de
-  examples:
-  - text: |
-      Ja, ich habe [Algorithmen und Datenstrukturen](course) besucht
-    metadata:
-      canonical: true
-- intent: select_graduation
-  metadata:
-    language: de
-  examples:
-  - text: |
-      [Bachelor](graduation)
-  - text: |
-      Ich bin im [Bachelor](graduation)
-  - text: |
-      Ich mache den [Bachelor](graduation)
-  - text: |
-      Ich studiere [Medieninformatik](subjects) im [Bachelor](graduation)
-    metadata:
-      canonical: true
-  - text: |
-      Ich studiere ihn im [Bachelor](graduation)
-  - text: |
-      Ich studiere im [Bachelor](graduation)
-    metadata:
-      canonical: true
-  - text: |
-      [Master](graduation)
-    metadata:
-      canonical: true
-  - text: |
-      [Master](graduation) studiengang
-  - text: |
-      [bachelor](graduation)
-- intent: select_module
-  metadata:
-    language: de
-  examples:
-  - text: |
-      Habe [PI-BA-M01](module), [MEI-BA-M01](module), [MEI-BA-M02](module) und [PI-BA-M02](module) abgeschlossen
-  - text: |
-      Ich habe [A3-B2-12](module) abgeschlossen
-    metadata:
-      canonical: true
-  - text: |
-      Ich habe AB-B3_12 abgeschlossen
-  - text: |
-      [MEI-BA-M04](module)
-    metadata:
-      canonical: true
-- intent: select_modules
-  metadata:
-    language: de
-  examples:
-  - text: |
-      [PI-BA-M01](module)
-  - text: |
-      [PI-BA-M06](module)
-    metadata:
-      canonical: true
-  - text: |
-      [PI-BA-M07](module)
-    metadata:
-      canonical: true
-- intent: select_semester
-  metadata:
-    language: de
-  examples:
-  - text: |
-      [15](semester)
-    metadata:
-      canonical: true
-  - text: |
-      [2](semester).
-    metadata:
-      canonical: true
-  - text: |
-      [3](semester)
-  - text: |
-      [3](semester).
-    metadata:
-      canonical: true
-  - text: |
-      [3](semester). Semester
-  - text: |
-      [5](semester).
-    metadata:
-      canonical: true
-  - text: |
-      [7](semester)
-  - text: |
-      [7](semester).
-    metadata:
-      canonical: true
-  - text: |
-      [8](semester).
-    metadata:
-      canonical: true
-  - text: |
-      Bin zum [5](semester). Semester
-  - text: |
-      Ich bin im [1](semester). Semester
-    metadata:
-      canonical: true
-  - text: |
-      Ich möchte [8](semester) Semester studieren
-- intent: select_sws
-  metadata:
-    language: de
-  examples:
-  - text: |
-      [15] sws(sws)
-    metadata:
-      canonical: true
-  - text: |
-      [5] sws(sws)
-  - text: |
-      [6] sws(sws)
-  - text: |
-      [9] sws(sws)
-  - text: |
-      Ich möchte [13] sws (sws) aufbringen
-    metadata:
-      canonical: true
-- intent: user_happy
-  metadata:
-    language: de
-  examples:
-  - text: |
-      Ich bin zufrieden
-    metadata:
-      canonical: true
-  - text: |
-      Ich möchte den Stundenplan übernehmen
-- intent: user_unhappy
-  metadata:
-    language: de
-  examples:
-  - text: |
-      Ich will Änderungen vornehmen
-    metadata:
-      canonical: true
+    - Ja, ich habe [Algorithmen und Datenstrukturen](course) besucht
+    - Ja, ich habe [MMI](course) besucht
+- intent: needs_help
+  examples: |
+    - Keine Ahnung
+    - keine ahnung
+    - ich kenne meine Kurse nicht
+    - Wo sehe ich die
+    - Woher weiß ich das
+    - hilfe
 - intent: wants_information
-  metadata:
-    language: de
-  examples:
-  - text: |
-      Ich möchte Informationen zu dem Kurs haben
-    metadata:
-      canonical: true
-  - text: |
-      Ich möchte weiter Informationen einsehen
-  - text: |
-      ich möchte Informationen zu Kurs [BA-PI-01](module) einsehen
-    metadata:
-      canonical: true
+  examples: |
+    - Ich möchte weitere Informationen
+    - Ich möchte Informationen zu dem Kurs haben
+    - Ich möchte weitere Informationen einsehen
+    - mehr info
+    - Wann ist der Kurs
+    - Wer leitet den Kurs
+    - Welcher Raum ist der Kurs
+- intent: accept_course
+  examples: |
+    - Ich möchte [PI-BA-M02](module) belgen
+    - Ich möchte den Kurs annehmen
+    - Ich nehme den Kurs
+    - Ich möchte den Kurs belegen
+    - Trage mir den Kurs ein
+    - Den Kurs will ich
+- intent: user_happy
+  examples: |
+    - Ich bin zufrieden
+    - Ich möchte den Stundenplan übernehmen
+    - Der Stundenplan passt so
+    - Ist in ordnung
+    - passt
+    - Ist ok
+- intent: user_unhappy
+  examples: |
+    - Ich will Änderungen vornehmen
+    - Der passt so nicht
+    - Ich möchte etwas ändern
+    - passt so nicht
+    - ich will etwas ändern
 - intent: cancel
-  metadata:
-    language: de
-  examples:
-  - text: |
-      ich möchte nichts ändern
-  - text: |
-      abbrechen
+  examples: |
+    - ich möchte nichts ändern
+    - änderung abbrechen
+    - abbrechen
+    - änderung beenden
 - intent: remove_course
-  metadata:
-    language: de
-  examples:
-  - text: |
-      ich möchte den Kurs [PI-MA-M01](module) entfernen
-  - text: |
-      Ich möchte den Kurs [PI-BA-M02.2](module) entfernen
+  examples: |
+    - ich möchte den Kurs [PI-MA-M01](module) entfernen
+    - Ich möchte den Kurs [PI-BA-M02.2](module) entfernen
+    - entferne bitte den Kurs [PI-BA-M02.1](module)
 
+  

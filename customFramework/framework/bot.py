@@ -347,7 +347,9 @@ class Bot:
 ########################
 # Code outside of Framework
 ####################
+# User Object
 class User:
+    # Courses not fully implementet in this Version
     finishedCourses = []
     possibleCourses = []
     selectedCourses = []
@@ -384,10 +386,10 @@ class User:
 
 currentUser = User()    
 myBot = Bot()
+
+# Database
 client = MongoClient('localhost', 27017)
 courseDatabase = client['kursplaner_database']
-
-
 courseCollection = courseDatabase["courseCollection"]
 studyCollection = courseDatabase["studyCollection"]
 
@@ -398,11 +400,6 @@ exempStudyplan = {
     4: ["PI-BA-M03.1", "PI-BA-M03.2", "MEI-BA-M07.1", "MEI-BA-M07.2", "MEI-BA-M08.1", "MEI-BA-M08.2"],
     5: ["MEI-BA-M05.1", "MEI-BA-M05.2", "MEI-BA-M09.1", "MEI-BA-M09.2", "MEI-BA-M10.1", "MEI-BA-M10.2", "MEI-BA-M10.3"],
     6: ["MEI-BA-M10.4"]}
-
-# rec = courseCollection.insert_one(record)
-
-#for i in mydatabase.myTable.find({title: 'MongoDB and Python'})
-#    print(i)
 
 def create_Schedule(tableDict):
     doc = SimpleDocTemplate("Zeitplan/simple_table.pdf", pagesize=letter)
@@ -846,7 +843,7 @@ user_wants_removal = Dialogue(userIntent="confirm", index=utter_remove_course, s
 user_reject_removal = Dialogue(userIntent="reject", index=utter_remove_course, subNodes=[action_jump_to_ask_change])
 
 utter_ask_what_changes = Dialogue(botResponse="Geben sie an welcher Kurs aus ihrem Stundenplan gelöscht werden soll oder nennen sie einen Kurs um diesen hinzuzufügen.")
-user_intent_add_course = Dialogue(userIntent="wants_course", index=utter_ask_what_changes, subNodes=[action_add_course])
+user_intent_add_course = Dialogue(userIntent="select_course", index=utter_ask_what_changes, subNodes=[action_add_course])
 user_intent_delete_course = Dialogue(userIntent="remove_course", index=utter_ask_what_changes, subNodes=[utter_remove_course, user_wants_removal, user_reject_removal])
 user_cancel = Dialogue(userIntent="cancel", index=utter_ask_what_changes, subNodes=[return_to_ask_changes])
 
@@ -854,8 +851,8 @@ user_cancel = Dialogue(userIntent="cancel", index=utter_ask_what_changes, subNod
 
 ## Main dialog
 utter_ask_for_changes_to_courseplan = Dialogue(botResponse="Ihren Stundenplan können sie unter {{schedule_link}} einsehen. Möchten sie den Stundenplan übernehmen oder möchten sie Änderungen an diesem Vornehmen?")
-user_reject_changes = Dialogue(userIntent="reject", index=utter_ask_for_changes_to_courseplan)
-user_wants_changes = Dialogue(userIntent="confirm", index=utter_ask_for_changes_to_courseplan, subNodes=[utter_ask_what_changes, user_intent_add_course, user_intent_delete_course, user_cancel])
+user_reject_changes = Dialogue(userIntent="user_happy", index=utter_ask_for_changes_to_courseplan)
+user_wants_changes = Dialogue(userIntent="user_unhappy", index=utter_ask_for_changes_to_courseplan, subNodes=[utter_ask_what_changes, user_intent_add_course, user_intent_delete_course, user_cancel])
 
 # return stundenplan
 utter_return_stundenplan = Dialogue(botResponse="Ihren fertigen Stundenplan können sie unter {{schedule_link}} einsehen.")
@@ -876,35 +873,8 @@ bot_finished = Dialogue(botResponse="Ich hoffe ich konnte ihnen weiterhelfen, ve
 
 myBot.addDialogue([intro, Datenerhebung_Container, Kursauswahl_Container, last_information, bot_finished])
 
-
-
-
-
-
-
-def jumpToIntro():
-    #myBot.jumpToDialog(main_graduation)
-    return
-
-#mainDiaSub = Dialogue(subNodes=[main_graduation, sub_subject])
-#mainDia = Dialogue(subNodes=[intro, main_subject, mainDiaSub, ask_study_time, ask_main_subject])
-#testJump = Dialogue(action=lambda: jumpToIntro())
-
-# Runs Main Dia everytime the user intents test
-#subDialogue1 = subDialogue(userIntent="test", dialogue=mainDia, standardDisabled=True)
-
-# Sub dialogue can get Disabled like this
-#subDialogue1.disable()
-
-# Or at initialisation like this with standardDiasabled = True
-#subDialogue2 = subDialogue(userIntent="test2", dialogue=mainDiaSub, standardDisabled=True)
-
 def run_Rasa():
     subprocess.call(["rasa", "run" ,"--enable-api", "-m", "rasa-model/nlu-20230327-213949-asphalt-bayes.tar.gz"])
-
-#myBot.addSubDialogue([subDialogue1])
-#myBot.addDialogue([mainDia, testJump])
-
 
 
 def startEel():
@@ -929,42 +899,3 @@ f.start()
 @eel.expose
 def returnChat(input):
     Bot.ainput = input
-
-
-# Alle Dialoge
-#    "Ihr gewähltes Fach wird an der Universität nicht als Hauptfach angeboten."
-#"Was ist ihr zweites Hauptfach/ ihre Nebenfächer?"
-#    "Die ausgewählte Fächerkombination {main_subject} mit {sub_subject} ist leider nicht möglich."
-#"Studieren sie {main_subject} im Bachelor oder Master Studiengang?"
-#    "Der angegebene Abschluss {graduation} in {main_subject} wird an der Universität leider nicht angeboten."
-
-# Alle Intents
-"select_fach"
-"select_semester"
-"select_sws"
-"needs_help"
-"confirm"
-"reject"
-"select_module"
-"select_course"
-
-# Alle actions
-"action_get_main_subject"
-"action_sub_subject_needed"
-"action_validate_sub_subject"
-"action_validate_graduation"
-
-
-#Kursauswahl
-
-dia5a = Dialogue(botResponse="Please enter your name.")
-dia6a = Dialogue(userIntent="yes")
-dia7a = Dialogue(botResponse="Thanks for entering your name, your name is {{name}}.")
-dia5b = Dialogue(botResponse="Sadge.")
-
-
-dia1 = Dialogue(botResponse="Hi welcome to my useless Bot")
-dia2 = Dialogue(botResponse="Do you want to enter your name?")
-dia3a = Dialogue(userIntent="no", index=2, subNodes=[dia5b])
-dia3b = Dialogue(userIntent="yes", index=2, subNodes=[dia5a, dia6a, dia7a])
-dia6 = Dialogue(botResponse="Thanks for using the Bot. {{name}}")
