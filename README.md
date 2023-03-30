@@ -30,3 +30,8 @@ rasa train nlu
 cd customFramework/framework
 python bot.py
 ```
+
+# Nachtrag
+Interessant für zukünftige Verisonen: 
+
+ChatGPT lokal: https://github.com/nomic-ai/gpt4all (visited 30.03.23)
