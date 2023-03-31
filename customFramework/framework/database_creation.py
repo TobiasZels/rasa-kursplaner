@@ -105,25 +105,6 @@ studyCollection = courseDatabase["studyCollection"]
 
 
 
-### SHOW
-_course_information = []
-
-
-
-_course_information.append({"group": group,
-                "time": time,
-                "room": room,
-                "additionalInfo": additionalInfo,
-                "teacher": teacher})
-
-
-_courses.append({"id": course_id,
-                "name": course_name,
-                "information": _course_information})
-
-
-
-
 
 # Kursobject, welches in einem Array gespeichert und später in der Datenbank abgespeichert wird
 course_object.append({"id": _id,
